@@ -1,6 +1,101 @@
 <!doctype html>
-<html>
-  <body>
-    <h1>novovictus.github.io is live</h1>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>novovictus | Project Index</title>
+  <meta name="description" content="Engineering projects including GPU telemetry (WTG), Home Assistant integrations, BLE reverse engineering, and hardware research." />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #0f1115;
+      color: #e6e8ee;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #a7adbb;
+    }
+
+    .card {
+      border: 1px solid #2a2f3a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      background: #171a21;
+    }
+
+    .card a {
+      color: #78a6ff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 6px;
+      padding: 4px 8px;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: #a7adbb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>novovictus</h1>
+    <p>Engineering projects focused on telemetry, reverse engineering, and practical systems research.</p>
+
+    <div class="card">
+      <h2>WTG – Windows Telemetry for GPUs</h2>
+      <p>Empirical GPU telemetry tool comparing NVML device-level metrics against Windows/WDDM reporting behavior.</p>
+      <a href="https://github.com/novovictus/WTG">View repository</a>
+      <div>
+        <span class="tag">Rust</span>
+        <span class="tag">NVML</span>
+        <span class="tag">GPU telemetry</span>
+        <span class="tag">Windows</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Home Assistant BLE Projects</h2>
+      <p>BLE advertisement parsing and integration patterns using ESPHome and Home Assistant.</p>
+      <p><em>Repository coming soon</em></p>
+    </div>
+
+    <div class="card">
+      <h2>Game Boy / IZEK Research</h2>
+      <p>Reverse engineering, ROM dumping, and hardware validation workflows for Game Boy systems.</p>
+      <p><em>Repository in progress</em></p>
+    </div>
+
+    <div class="card">
+      <h2>Home Assistant Orchestrator</h2>
+      <p>Concept work for multi-instance Home Assistant orchestration and control-plane design.</p>
+      <p><em>Planned project</em></p>
+    </div>
+
+    <p style="margin-top:40px;font-size:0.9rem;color:#777;">
+      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a>
+    </p>
+  </div>
+</body>
 </html>
