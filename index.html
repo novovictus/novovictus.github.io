@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>novovictus | Project Index</title>
-  <meta name="description" content="Engineering projects including GPU telemetry (WTG), Home Assistant integrations, BLE reverse engineering, and hardware research." />
+  <title>novovictus | Engineering Notes</title>
+  <meta name="description" content="Engineering notes and project artifacts focused on telemetry, hardware behavior, protocol analysis, and practical systems research." />
   <style>
     body {
       margin: 0;
@@ -24,8 +24,13 @@
       margin-bottom: 10px;
     }
 
+    h2 {
+      margin-bottom: 8px;
+    }
+
     p {
       color: #a7adbb;
+      line-height: 1.55;
     }
 
     .card {
@@ -36,13 +41,13 @@
       background: #171a21;
     }
 
-    .card a {
+    a {
       color: #78a6ff;
       font-weight: bold;
       text-decoration: none;
     }
 
-    .card a:hover {
+    a:hover {
       text-decoration: underline;
     }
 
@@ -56,16 +61,28 @@
       font-size: 0.75rem;
       color: #a7adbb;
     }
+
+    .muted {
+      color: #777;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>novovictus</h1>
-    <p>Engineering projects focused on telemetry, reverse engineering, and practical systems research.</p>
+    <p>
+      Engineering notes and project artifacts focused on telemetry, hardware behavior,
+      protocol analysis, and practical systems research.
+    </p>
 
     <div class="card">
-      <h2>WTG – Windows Telemetry for GPUs</h2>
-      <p>Empirical GPU telemetry tool comparing NVML device-level metrics against Windows/WDDM reporting behavior.</p>
+      <h2>WTG: Windows Telemetry for GPUs</h2>
+      <p>
+        A public research utility for observing GPU telemetry behavior on Windows,
+        with emphasis on the gap between device-level NVML readings and Windows/WDDM
+        reporting surfaces under compute load.
+      </p>
       <a href="https://github.com/novovictus/WTG">View repository</a>
       <div>
         <span class="tag">Rust</span>
@@ -76,24 +93,51 @@
     </div>
 
     <div class="card">
-      <h2>Home Assistant BLE Projects</h2>
-      <p>BLE advertisement parsing and integration patterns using ESPHome and Home Assistant.</p>
-      <p><em>Repository coming soon</em></p>
+      <h2>Hardware Protocol Reverse Engineering</h2>
+      <p>
+        Field-oriented work around commodity hardware, embedded behavior, and
+        low-power wireless protocols. Current focus is on extracting useful signals
+        from constrained devices and translating them into usable external system data.
+      </p>
+      <div>
+        <span class="tag">BLE</span>
+        <span class="tag">embedded systems</span>
+        <span class="tag">protocol analysis</span>
+        <span class="tag">hardware validation</span>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Game Boy / IZEK Research</h2>
-      <p>Reverse engineering, ROM dumping, and hardware validation workflows for Game Boy systems.</p>
-      <p><em>Repository in progress</em></p>
+      <h2>Power Monitoring and Automation</h2>
+      <p>
+        Instrumentation and automation research around shore power, electrical state,
+        and environment-aware control loops. The goal is practical monitoring that can
+        feed reliable automation without unnecessary platform complexity.
+      </p>
+      <div>
+        <span class="tag">power monitoring</span>
+        <span class="tag">automation</span>
+        <span class="tag">Home Assistant</span>
+        <span class="tag">edge systems</span>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Home Assistant Orchestrator</h2>
-      <p>Concept work for multi-instance Home Assistant orchestration and control-plane design.</p>
-      <p><em>Planned project</em></p>
+      <h2>Distributed Home Automation Systems</h2>
+      <p>
+        Concept work exploring multi-node Home Assistant deployments, coordination
+        patterns, management surfaces, and system-level observability across local
+        automation environments.
+      </p>
+      <div>
+        <span class="tag">Home Assistant</span>
+        <span class="tag">orchestration</span>
+        <span class="tag">control plane</span>
+        <span class="tag">observability</span>
+      </div>
     </div>
 
-    <p style="margin-top:40px;font-size:0.9rem;color:#777;">
+    <p class="muted" style="margin-top:40px;">
       GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a>
     </p>
   </div>
