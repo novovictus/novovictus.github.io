@@ -51,6 +51,13 @@
       text-decoration: underline;
     }
 
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
     .tag {
       display: inline-block;
       margin-top: 10px;
@@ -83,10 +90,11 @@
         with emphasis on the gap between device-level NVML readings and Windows/WDDM
         reporting surfaces under compute load.
       </p>
-      <p>
-      <a href="https://www.youtube.com/watch?v=AIQF_BEdO08" target="_blank">Reference run (video)</a>
-      </p>
-      <a href="https://github.com/novovictus/WTG">View repository</a>
+      <div class="links">
+        <a href="https://github.com/novovictus/WTG/releases/latest" target="_blank">Latest beta release</a>
+        <a href="https://www.youtube.com/watch?v=AIQF_BEdO08" target="_blank">Reference run (video)</a>
+        <a href="https://github.com/novovictus/WTG" target="_blank">View repository</a>
+      </div>
       <div>
         <span class="tag">Rust</span>
         <span class="tag">NVML</span>
@@ -141,7 +149,8 @@
     </div>
 
     <p class="muted" style="margin-top:40px;">
-      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a>
+      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a><br />
+      Contact: <a href="mailto:contact@ninja-neer.net">contact@ninja-neer.net</a>
     </p>
   </div>
 </body>
