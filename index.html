@@ -51,6 +51,37 @@
       text-decoration: underline;
     }
 
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0;
+      margin-top: 12px;
+    }
+
+    .links a {
+      display: inline-block;
+      margin-right: 14px;
+    }
+
+    .links a + a {
+      border-left: 2px solid #5f6b82;
+      padding-left: 14px;
+    }
+
+    .reported-bug {
+      display: block;
+      margin-top: 10px;
+      text-align: right;
+      color: #777;
+      font-size: 0.8rem;
+      font-weight: normal;
+    }
+
+    .reported-bug:hover {
+      color: #a7adbb;
+    }
+
     .tag {
       display: inline-block;
       margin-top: 10px;
@@ -83,30 +114,61 @@
         with emphasis on the gap between device-level NVML readings and Windows/WDDM
         reporting surfaces under compute load.
       </p>
-      <p>
-      <a href="https://www.youtube.com/watch?v=AIQF_BEdO08" target="_blank">Reference run (video)</a>
-      </p>
-      <a href="https://github.com/novovictus/WTG">View repository</a>
+      <div class="links">
+        <a href="https://github.com/novovictus/WTG/releases/latest" target="_blank">Latest Release</a>
+        <a href="https://www.youtube.com/watch?v=AIQF_BEdO08" target="_blank">Reference Run</a>
+        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/regression-research/wtg_regression_research.md" target="_blank">Regression Research</a>
+        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/regression-research/bench_v1.0.0.md" target="_blank">Bench Baseline</a>
+        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/test-matrix/matrix.md" target="_blank">Test Matrix</a>
+        <a href="https://github.com/novovictus/WTG" target="_blank">View Repo</a>
+      </div>
       <div>
         <span class="tag">Rust</span>
         <span class="tag">NVML</span>
         <span class="tag">GPU telemetry</span>
         <span class="tag">Windows</span>
       </div>
+      <a class="reported-bug" href="https://developer.nvidia.com/bugs/6162407" target="_blank">Reported Bug</a>
     </div>
 
     <div class="card">
-      <h2>Hardware Protocol Reverse Engineering</h2>
+      <h2>BLE Propane Monitor for Home Assistant</h2>
       <p>
-        Field-oriented work around commodity hardware, embedded behavior, and
-        low-power wireless protocols. Current focus is on extracting useful signals
-        from constrained devices and translating them into usable external system data.
+        A no-nonsense ESPHome reference implementation for reading compatible BLE
+        propane tank monitor advertisements with an ESP32 and exposing normalized
+        level, sensor state, and RSSI entities in Home Assistant.
       </p>
+      <div class="links">
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor" target="_blank">View Repo</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/examples/esphome/propane-monitor.yaml" target="_blank">ESPHome Example</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/docs/protocol-notes.md" target="_blank">Protocol Notes</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/docs/references.md" target="_blank">References</a>
+      </div>
       <div>
         <span class="tag">BLE</span>
-        <span class="tag">embedded systems</span>
+        <span class="tag">ESPHome</span>
+        <span class="tag">Home Assistant</span>
         <span class="tag">protocol analysis</span>
-        <span class="tag">hardware validation</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Home Assistant Shop Ventilation Controller</h2>
+      <p>
+        A staged thermal-purge ventilation reference design for a high-ceiling shop,
+        using outdoor, occupied-zone, and upper-zone temperature sensors to control
+        a powered intake damper and blower through Home Assistant.
+      </p>
+      <div class="links">
+        <a href="https://github.com/novovictus/ha-shop-ventilation" target="_blank">View Repo</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/home-assistant/packages/shop_ventilation.yaml" target="_blank">HA Package</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/state-machine.md" target="_blank">State Machine</a>
+      </div>
+      <div>
+        <span class="tag">Home Assistant</span>
+        <span class="tag">thermal purge</span>
+        <span class="tag">shop automation</span>
+        <span class="tag">Shelly</span>
       </div>
     </div>
 
@@ -141,7 +203,8 @@
     </div>
 
     <p class="muted" style="margin-top:40px;">
-      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a>
+      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a><br />
+      Contact: <a href="mailto:contact@ninja-neer.net">contact@ninja-neer.net</a>
     </p>
   </div>
 </body>
