@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NUC Tailscale Exit Node Cooling | novovictus</title>
-  <meta name="description" content="Side quest engineering log for thermally stabilizing an open-air NUC repurposed as a quiet Tailscale exit node." />
+  <meta name="description" content="Side quest engineering log for thermally stabilizing an open-air NUC as a quiet Tailscale exit node." />
   <link rel="canonical" href="https://ninja-neer.net/side-quests/nuc-tailscale-exit-node-cooling.html" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="NUC Tailscale Exit Node Cooling" />
-  <meta property="og:description" content="A stripped-down Windows NUC repurposed as a quiet Tailscale exit node, then thermally stabilized with targeted heatsinks and low-RPM assisted airflow." />
+  <meta property="og:description" content="A stripped-down Windows NUC repurposed as a quiet Tailscale exit node, then thermally stabilized with targeted heatsinks and low RPM airflow." />
   <meta property="og:url" content="https://ninja-neer.net/side-quests/nuc-tailscale-exit-node-cooling.html" />
   <style>
     body {
@@ -125,9 +125,9 @@
 
     <h1>NUC Tailscale Exit Node: Open-Air Cooling Stabilization</h1>
     <p>
-      A small side quest: repurposing a stripped-down Windows NUC as a quiet Tailscale
-      exit node, then hardening the open-air hardware build with targeted heatsinks
-      and low-RPM assisted airflow.
+      A small side quest: an Intel NUC as a quiet Tailscale
+      exit node cooling the open-air hardware with heatsinks
+      and low-RPM airflow.
     </p>
 
     <div class="links">
@@ -145,8 +145,7 @@
     <div class="card">
       <h2>Measured Result</h2>
       <p>
-        The headline result was not cosmetic. The final sustained-load temperature
-        landed below the platform's previous idle operating temperature.
+        The final sustained-load temperature landed below the platform's previous idle operating temperature.
       </p>
       <div class="metric-grid">
         <div class="metric">
@@ -167,38 +166,35 @@
     <h2>Build Context</h2>
     <p>
       The NUC was built as a dedicated Tailscale exit node. The software build was
-      intentionally minimal: strip Windows down as far as practical, install the
+      intentionally minimal: strip down as far as practical, install the
       Tailscale executable, log in, and add the required route. The hardware work
       was the part worth documenting.
     </p>
     <p>
       Because the system is running as an open-air platform, the goal was quiet
-      sustained reliability rather than enclosure aesthetics. The original thermal
-      state was acceptable for idle operation but left avoidable heat on the table
-      under sustained CPU load.
+      sustained reliability rather than enclosure aesthetics.
     </p>
 
     <h2>Thermal Pass</h2>
     <p>
-      The black sticker was removed from the copper heatsink and the copper surface
-      was cleaned with automotive cleaner to remove adhesive residue. Small heatsinks
-      were then stacked onto the copper wherever there was useful surface area.
+      The sticker was removed from the copper heatsink, the surface
+      was cleaned with automotive cleaner to remove adhesive residue, and heatsinks
+      were stacked onto the copper wherever there was useful surface area.
     </p>
     <p>
-      After that, the surrounding board components were probed under load. Any chip
+      The surrounding board components were probed under load and any chip
       that climbed past roughly 100°F received a small heatsink. Larger heatsinks
       were added to the NVMe SSD and exposed RAM chips where they physically made
       sense.
     </p>
     <p>
-      Fin orientation was deliberate. The heatsinks were aligned parallel to the
-      existing airflow path instead of fighting the platform's native cooling pattern.
+      The heatsinks were aligned parallel to the existing airflow path.
     </p>
 
     <h2>Airflow</h2>
     <p>
       An 80 mm fan was mounted behind the integrated blower and powered from a
-      lower-voltage wall wart. That kept the fan running at lower RPMs for reduced
+      lower-voltage wall wart that kept the fan running at lower RPMs for reduced
       noise while still adding useful board-level airflow across the open platform.
     </p>
 
@@ -210,8 +206,7 @@
     </p>
     <p>
       That makes the result simple: full-load temperature after the build was lower
-      than the original idle temperature. For a small edge node expected to stay up
-      quietly, that is the useful engineering outcome.
+      than the original idle temperature.
     </p>
 
     <p class="muted" style="margin-top:40px;">
