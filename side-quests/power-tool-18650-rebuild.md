@@ -1,7 +1,5 @@
 # Power-Tool 18650 Rebuild Sidequest
 
-Status: exploratory engineering notes, not published on the site index
-
 Date started: 2026-07
 
 ## Scope
@@ -13,7 +11,7 @@ Initial packs:
 - Ryobi ONE+ 18 V 4 Ah pack, expected 5S2P / 10-cell architecture
 - DeWalt DCB207 20 V MAX 1.3 Ah pack, 5S1P / 5-cell architecture
 
-This note is a work log, not a repair tutorial or a published site artifact.
+This note is a work log, not a repair tutorial.
 
 ## Pack history
 
@@ -56,18 +54,13 @@ Planned cell allocation:
 - 5 cells: DeWalt 5S1P rebuild
 - 10 cells: reserve for another pack, destructive weld setup on non-service cells if needed, or later sidequest work
 
-## Existing equipment
+## Equipment
 
 - Portable battery spot welder, Amazon ASIN B09V2R1TKD
 - Keenstone four-bay charger, Amazon ASIN B07JD77LVD
 - Digital multimeter
 - IR thermometer
 - Kapton tape
-- Cutters
-- iFixit toolkit
-- Fully equipped shop
-
-No filming is planned. Soldering is available where the OEM pack construction requires it.
 
 ## Charger role and limitations
 
