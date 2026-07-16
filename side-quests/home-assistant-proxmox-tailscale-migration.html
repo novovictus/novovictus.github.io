@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home Assistant Proxmox Migration | novovictus</title>
+  <meta name="description" content="Side quest engineering log for moving Home Assistant from a Windows laptop with Oracle VirtualBox and a Raspberry Pi to x86_64 Proxmox nodes with Tailscale site routing and Zigbee coordinator passthrough." />
+  <link rel="canonical" href="https://ninja-neer.net/side-quests/home-assistant-proxmox-tailscale-migration.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Home Assistant on Proxmox with Tailscale Site Access" />
+  <meta property="og:description" content="A staged Home Assistant migration to Proxmox-backed x86_64 nodes, keeping Tailscale routing separate and preserving Zigbee coordinator continuity." />
+  <meta property="og:url" content="https://ninja-neer.net/side-quests/home-assistant-proxmox-tailscale-migration.html" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #0f1115;
+      color: #e6e8ee;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin-top: 32px;
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      margin-top: 22px;
+      margin-bottom: 6px;
+      color: #e6e8ee;
+    }
+
+    p, li {
+      color: #a7adbb;
+      line-height: 1.55;
+    }
+
+    a {
+      color: #78a6ff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .card {
+      border: 1px solid #2a2f3a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      background: #171a21;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0;
+      margin-top: 12px;
+    }
+
+    .links a {
+      display: inline-block;
+      margin-right: 14px;
+    }
+
+    .links a + a {
+      border-left: 2px solid #5f6b82;
+      padding-left: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      margin-right: 6px;
+      padding: 4px 8px;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: #a7adbb;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .box {
+      border: 1px solid #2a2f3a;
+      border-radius: 10px;
+      padding: 14px;
+      background: #11141a;
+    }
+
+    .box h3 {
+      margin-top: 0;
+    }
+
+    pre {
+      border: 1px solid #2a2f3a;
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+      background: #11141a;
+      color: #e6e8ee;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92rem;
+    }
+
+    .muted {
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="muted"><a href="/">← Back to novovictus</a></p>
+
+    <h1>Home Assistant on Proxmox with Tailscale Site Access</h1>
+    <p>
+      A side quest migration from mixed Home Assistant hosts to x86_64 Proxmox nodes,
+      with private site access, static infrastructure roles, and Zigbee coordinator continuity.
+    </p>
+
+    <div>
+      <span class="tag">Home Assistant</span>
+      <span class="tag">Proxmox</span>
+      <span class="tag">Tailscale</span>
+      <span class="tag">Zigbee</span>
+      <span class="tag">edge systems</span>
+    </div>
+
+    <div class="card">
+      <h2>Result</h2>
+      <p>
+        Two Home Assistant deployments were moved into the same operating model:
+        Home Assistant OS as a Proxmox VM, Tailscale as a separate site-access container,
+        and Zigbee coordinators passed through to the Home Assistant VMs.
+      </p>
+      <pre><code>x86_64 Proxmox node
+├── LXC: Tailscale site router
+└── VM: Home Assistant OS
+    └── USB passthrough: Zigbee coordinator</code></pre>
+    </div>
+
+    <h2>Build Context</h2>
+    <p>
+      The home deployment started as a Windows laptop running Home Assistant through
+      Oracle VirtualBox. The shop deployment started as a Raspberry Pi. Both worked,
+      but neither was the operating pattern I wanted to keep extending.
+    </p>
+    <p>
+      The migration goal was not to build an enterprise lab. The goal was to make the
+      automation stack easier to recover, easier to reach remotely, and less dependent
+      on fragile host-specific installs.
+    </p>
+    <p>
+      Hardware model details are intentionally omitted. The specific boxes are not the
+      useful part of the work, and publishing model-level infrastructure details exposes
+      more than it explains.
+    </p>
+
+    <h2>Design Goals</h2>
+    <ul>
+      <li>Keep Home Assistant OS as the supported appliance layer.</li>
+      <li>Move both sites to x86_64 Proxmox-backed hosts.</li>
+      <li>Keep Tailscale routing outside Home Assistant.</li>
+      <li>Avoid exposing Home Assistant directly to the internet.</li>
+      <li>Use predictable addresses for infrastructure roles.</li>
+      <li>Preserve Zigbee networks without re-pairing devices.</li>
+      <li>Stage the cutovers with rollback points instead of improvising live.</li>
+    </ul>
+
+    <h2>Home Migration</h2>
+    <p>
+      The home site moved from the Windows laptop and Oracle VirtualBox arrangement to
+      a Proxmox-backed Home Assistant OS VM. The Zigbee coordinator was moved to the
+      new host and passed through to the VM.
+    </p>
+
+    <div class="split">
+      <div class="box">
+        <h3>Before</h3>
+        <ul>
+          <li>Windows laptop host</li>
+          <li>Oracle VirtualBox</li>
+          <li>Home Assistant guest workload</li>
+          <li>Zigbee coordinator attached to the old host</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>After</h3>
+        <ul>
+          <li>Proxmox on x86_64 hardware</li>
+          <li>Home Assistant OS VM</li>
+          <li>Tailscale container for site access</li>
+          <li>Zigbee coordinator passed through to the VM</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Shop Migration</h2>
+    <p>
+      The shop site moved from a Raspberry Pi to a second Proxmox-backed Home Assistant
+      OS VM. This cutover was staged more carefully because the Pi was the active
+      production controller.
+    </p>
+    <ol>
+      <li>Build the Home Assistant OS VM.</li>
+      <li>Prevent the VM from auto-starting.</li>
+      <li>Boot the VM with the network disconnected.</li>
+      <li>Assign the static address from the Home Assistant console.</li>
+      <li>Snapshot the staged VM.</li>
+      <li>Temporarily bring the VM online to update and validate.</li>
+      <li>Take a fresh full backup from the Pi.</li>
+      <li>Shut down the Pi.</li>
+      <li>Bring the Proxmox VM online.</li>
+      <li>Restore the fresh backup into the VM.</li>
+      <li>Move the Zigbee coordinator to the Proxmox host.</li>
+      <li>Pass the Zigbee coordinator through to the Home Assistant VM.</li>
+      <li>Validate that devices begin reporting without re-pairing.</li>
+    </ol>
+
+    <h2>Tailscale Routing</h2>
+    <p>
+      Tailscale became the private access layer for each site, but the useful design
+      choice was keeping it separate from Home Assistant itself.
+    </p>
+    <pre><code>Proxmox host:
+  break-glass management path
+
+Tailscale LXC:
+  subnet routing
+  optional exit-node behavior
+
+Home Assistant VM:
+  automation platform only</code></pre>
+    <p>
+      During setup, routing issues reinforced the importance of giving the site-router
+      container a stable LAN identity. A subnet router that loses its local address can
+      look like a Tailscale problem even when the root cause is local network state.
+    </p>
+
+    <h2>Addressing Strategy</h2>
+    <p>
+      Exact addresses are omitted, but the role pattern is preserved:
+    </p>
+    <pre><code>router / gateway
+Proxmox host
+Tailscale container
+Home Assistant VM</code></pre>
+    <p>
+      Each infrastructure role gets a predictable address. That makes recovery,
+      routing, and troubleshooting easier, especially when working remotely.
+    </p>
+    <p>
+      For the staged cutover, the new Home Assistant VM was configured before it was
+      allowed onto the network. That avoided collision with the still-running production host.
+    </p>
+
+    <h2>Zigbee Coordinator Migration</h2>
+    <p>
+      Both migrations included moving a Zigbee coordinator from the old host to the new
+      Proxmox-backed Home Assistant VM.
+    </p>
+    <p>
+      The important object is the coordinator and the restored Home Assistant state, not
+      the old host. Once the coordinator was attached to the restored VM, devices began
+      reporting without being re-paired.
+    </p>
+    <p>
+      USB serial identity was checked on the Proxmox host before passthrough. The VM then
+      received the coordinator through Proxmox USB passthrough, and Home Assistant resumed
+      control through the restored Zigbee integration.
+    </p>
+
+    <h2>Snapshots and Rollback</h2>
+    <p>
+      Snapshots were used as temporary rollback points during staging and cutover. They
+      were not treated as backups.
+    </p>
+    <pre><code>Useful checkpoints:
+- clean VM before first boot
+- static addressing staged
+- updated VM before final restore
+- post-cutover with Zigbee reporting</code></pre>
+    <p>
+      After the migration is stable, old staging snapshots should be removed to reduce
+      thin-provisioning exposure.
+    </p>
+
+    <h2>Lessons</h2>
+    <h3>Separate access from automation</h3>
+    <p>
+      Tailscale should not depend on Home Assistant when Home Assistant is the thing being
+      migrated, restored, or debugged.
+    </p>
+
+    <h3>Static infrastructure roles reduce ambiguity</h3>
+    <p>
+      Predictable addresses for the Proxmox host, Tailscale container, and Home Assistant
+      VM made staged migration and remote recovery cleaner.
+    </p>
+
+    <h3>VM network edits can change MAC addresses</h3>
+    <p>
+      When modifying a Proxmox VM network definition, preserving the existing MAC matters
+      if reservations or rules depend on it.
+    </p>
+
+    <h3>Stopped is not the same as safe</h3>
+    <p>
+      A powered-off VM can still auto-start later. During staging, the VM needed to be
+      stopped, have auto-start disabled, and have its virtual network link disconnected.
+    </p>
+
+    <h3>Zigbee continuity depends on the coordinator</h3>
+    <p>
+      Moving the coordinator and restoring the Home Assistant backup preserved the Zigbee
+      network. Re-pairing devices was not required.
+    </p>
+
+    <h2>Why This Was Worth Logging</h2>
+    <p>
+      This was not a flashy build, but it had enough real engineering content to preserve:
+      host migration, backup and restore discipline, Tailscale routing, static addressing,
+      USB passthrough, staged cutover, and Zigbee continuity.
+    </p>
+    <p>
+      It is exactly the kind of side quest that seems small until it has to be done again
+      from memory.
+    </p>
+
+    <p class="muted" style="margin-top:40px;">
+      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a><br />
+      Contact: <a href="mailto:contact@ninja-neer.net">contact@ninja-neer.net</a>
+    </p>
+  </div>
+</body>
+</html>
