@@ -62,6 +62,32 @@ Planned cell allocation:
 - IR thermometer
 - Kapton tape
 
+## Work performed
+
+Photo record: [Google Photos album](https://photos.app.goo.gl/bBk7p1CUENwdpNvF9)
+
+### Pack teardown and documentation
+
+- Opened both packs and documented the original cell types, mechanical layouts, series/parallel arrangements, board connections, and main-current paths.
+- Destructively cut the original interconnects with side snips to separate the failed cell arrays from the retained pack hardware.
+- During cutting, a conductive path contacted the cell casing and produced an arc. This confirmed that the can must be treated as an active electrical surface throughout destructive disassembly, even when working from the visible interconnect side.
+- Released the original cells from their plastic cages and retained the cages, boards, terminals, thermistors, and other reusable pack hardware.
+
+### Board and lead preparation
+
+- Desoldered the remaining cut lead sections from the boards.
+- Cleared the connection points with a solder sucker.
+- Cut replacement main leads to length.
+- Bent the new leads to match the required exit geometry.
+- Spot welded angled nickel interfaces onto the prepared main leads for later attachment to the rebuilt cell arrays.
+
+### New-cell charging
+
+- Charged the new cells in four-cell lots using the Keenstone charger.
+- Each lot required roughly four hours to reach the charger's full-charge indication.
+- Final indicated voltage was approximately 4.22 V per cell.
+- This establishes a common full-charge starting point for assembly, but it is not a measured discharge-capacity or internal-resistance qualification.
+
 ## Charger role and limitations
 
 The Keenstone charger provides four independent bays, 4.2 V lithium-ion charging, selectable 500 mA or 1000 mA charge current, and per-bay indication of voltage, current, and elapsed time.
@@ -139,7 +165,7 @@ The objective is to reject gross outliers and assemble matched groups from one n
 
 Before connecting or charging an assembled pack:
 
-- Verify cell orientation against the original layout.
+- Verify cell orientation against the documented original layout.
 - Verify each series-group voltage independently.
 - Verify monotonic node progression from B- through all intermediate taps to B+.
 - Verify total pack voltage.
@@ -163,11 +189,19 @@ Before connecting or charging an assembled pack:
 - All five parallel groups remain closely matched during the first charge.
 - Pack returns to normal tool operation without abnormal heating or early cutoff.
 
+## Next step
+
+- Reassemble the new cells in the documented Ryobi 5S2P and DeWalt 5S1P configurations.
+- Reinsert both assemblies into their retained plastic cages and pack shells.
+- Recreate the required nickel interconnects.
+- Spot weld the prepared board leads and sense connections to the corresponding battery connection points.
+- Complete the pre-energization checks before either pack is inserted into an OEM charger.
+
 ## Open items
 
-- Record exact Ryobi pack model and original cell markings.
-- Record individual Ryobi series-group voltages before removing the failed array, if still measurable.
-- Record original bus geometry and any fuse-link construction.
+- Record the exact Ryobi pack model and original cell markings from the teardown photos.
+- Record the exact DeWalt donor-cell markings from the teardown photos.
+- Record original bus geometry and any fuse-link construction in the written log.
 - Record the exact spot-welder model markings and successful settings for 0.15 mm pure nickel.
 - Determine whether the Keenstone charger bays show any consistent voltage or thermal offset.
-- Add first-build results, charged voltages, tool behavior, and thermal observations.
+- Add assembled-pack voltages, charger behavior, tool behavior, and thermal observations.
