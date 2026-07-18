@@ -11,316 +11,126 @@
   <meta property="og:description" content="Engineering notes and project artifacts focused on telemetry, hardware behavior, protocol analysis, and practical systems research." />
   <meta property="og:url" content="https://ninja-neer.net/" />
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #0f1115;
-      color: #e6e8ee;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      margin-bottom: 8px;
-    }
-
-    p {
-      color: #a7adbb;
-      line-height: 1.55;
-    }
-
-    .card {
-      border: 1px solid #2a2f3a;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      background: #171a21;
-    }
-
-    a {
-      color: #78a6ff;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0;
-      margin-top: 12px;
-    }
-
-    .links a {
-      display: inline-block;
-      margin-right: 14px;
-    }
-
-    .links a + a {
-      border-left: 2px solid #5f6b82;
-      padding-left: 14px;
-    }
-
-    .sidequest-links {
-      display: block;
-    }
-
-    .sidequest-links a {
-      display: block;
-      margin-right: 0;
-      margin-top: 8px;
-    }
-
-    .sidequest-links a + a {
-      border-left: none;
-      padding-left: 0;
-    }
-
-    .reported-bug {
-      display: block;
-      margin-top: 10px;
-      text-align: right;
-      color: #777;
-      font-size: 0.8rem;
-      font-weight: normal;
-    }
-
-    .reported-bug:hover {
-      color: #a7adbb;
-    }
-
-    .tag {
-      display: inline-block;
-      margin-top: 10px;
-      margin-right: 6px;
-      padding: 4px 8px;
-      border: 1px solid #2a2f3a;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      color: #a7adbb;
-    }
-
-    .quote {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 0.9rem;
-      font-style: italic;
-    }
-
-    .quote a {
-      color: #777;
-      font-weight: normal;
-    }
-
-    .quote a:hover {
-      color: #a7adbb;
-    }
-
-    .muted {
-      color: #777;
-      font-size: 0.9rem;
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0f1115; color: #e6e8ee; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    h2 { margin-bottom: 8px; }
+    p { color: #a7adbb; line-height: 1.55; }
+    .card { border: 1px solid #2a2f3a; border-radius: 12px; padding: 20px; margin-top: 20px; background: #171a21; }
+    a { color: #78a6ff; font-weight: bold; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .links { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-top: 12px; }
+    .links a { display: inline-block; margin-right: 14px; }
+    .links a + a { border-left: 2px solid #5f6b82; padding-left: 14px; }
+    .sidequest-links { display: grid; gap: 9px; margin-top: 14px; }
+    .sidequest-item { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+    .sidequest-item a { flex: 0 0 auto; margin: 0; }
+    .sidequest-item span { color: #a7adbb; line-height: 1.45; }
+    .sidequest-item span::before { content: "— "; color: #5f6b82; }
+    .reported-bug { display: block; margin-top: 10px; text-align: right; color: #777; font-size: 0.8rem; font-weight: normal; }
+    .reported-bug:hover { color: #a7adbb; }
+    .tag { display: inline-block; margin-top: 10px; margin-right: 6px; padding: 4px 8px; border: 1px solid #2a2f3a; border-radius: 999px; font-size: 0.75rem; color: #a7adbb; }
+    .quote { margin-top: 40px; text-align: center; font-size: 0.9rem; font-style: italic; }
+    .quote a { color: #777; font-weight: normal; }
+    .quote a:hover { color: #a7adbb; }
+    .muted { color: #777; font-size: 0.9rem; }
+    @media (max-width: 640px) {
+      .sidequest-item { display: block; }
+      .sidequest-item span { display: block; margin-top: 2px; }
+      .sidequest-item span::before { content: ""; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>novovictus</h1>
-    <p>
-      Engineering notes and project artifacts focused on telemetry, hardware behavior,
-      protocol analysis, and practical systems research.
-    </p>
+    <p>Engineering notes and project artifacts focused on telemetry, hardware behavior, protocol analysis, and practical systems research.</p>
 
     <div class="card">
       <h2>WTG: Windows Telemetry for GPUs</h2>
-      <p>
-        A public research utility for observing GPU telemetry behavior on Windows,
-        with emphasis on the gap between device-level NVML readings and Windows/WDDM
-        reporting surfaces under compute load.
-      </p>
+      <p>A public research utility for observing GPU telemetry behavior on Windows, with emphasis on the gap between device-level NVML readings and Windows/WDDM reporting surfaces under compute load.</p>
       <div class="links">
-        <a href="https://github.com/novovictus/WTG" target="_blank">View Repo</a>
-        <a href="https://github.com/novovictus/WTG/releases/latest" target="_blank">Latest Release</a>
-        <a href="https://www.youtube.com/watch?v=AIQF_BEdO08" target="_blank">Reference Run</a>
-        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/regression-research/wtg_regression_research.md" target="_blank">Regression Research</a>
-        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/regression-research/bench_v1.0.0.md" target="_blank">Bench Baseline</a>
-        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/test-matrix/matrix.md" target="_blank">Test Matrix</a>
+        <a href="https://github.com/novovictus/WTG" target="_blank" rel="noopener noreferrer">View Repo</a>
+        <a href="https://github.com/novovictus/WTG/releases/latest" target="_blank" rel="noopener noreferrer">Latest Release</a>
+        <a href="https://www.youtube.com/watch?v=AIQF_BEdO08" target="_blank" rel="noopener noreferrer">Reference Run</a>
+        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/regression-research/wtg_regression_research.md" target="_blank" rel="noopener noreferrer">Regression Research</a>
+        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/regression-research/bench_v1.0.0.md" target="_blank" rel="noopener noreferrer">Bench Baseline</a>
+        <a href="https://github.com/novovictus/WTG/blob/main/artifacts/test-matrix/matrix.md" target="_blank" rel="noopener noreferrer">Test Matrix</a>
       </div>
-      <div>
-        <span class="tag">Rust</span>
-        <span class="tag">NVML</span>
-        <span class="tag">GPU telemetry</span>
-        <span class="tag">Windows</span>
-      </div>
-      <a class="reported-bug" href="https://developer.nvidia.com/bugs/6162407" target="_blank">Reported Bug</a>
+      <div><span class="tag">Rust</span><span class="tag">NVML</span><span class="tag">GPU telemetry</span><span class="tag">Windows</span></div>
+      <a class="reported-bug" href="https://developer.nvidia.com/bugs/6162407" target="_blank" rel="noopener noreferrer">Reported Bug</a>
     </div>
 
     <div class="card">
       <h2>WTG HA Redline</h2>
-      <p>
-        A Home Assistant dashboard/example layer for WTG MQTT telemetry. WTG remains
-        the driver-reported source of truth; Redline turns those raw values into
-        arcade-style dashboard examples such as IDLE, LOAD, MAX, LIMIT, and SUS.
-      </p>
-      <div class="links">
-        <a href="https://github.com/novovictus/wtg-ha-redline" target="_blank">View Repo</a>
-      </div>
-      <div>
-        <span class="tag">Home Assistant</span>
-        <span class="tag">MQTT</span>
-        <span class="tag">dashboard examples</span>
-        <span class="tag">GPU telemetry</span>
-      </div>
+      <p>A Home Assistant dashboard/example layer for WTG MQTT telemetry. WTG remains the driver-reported source of truth; Redline turns those raw values into arcade-style dashboard examples such as IDLE, LOAD, MAX, LIMIT, and SUS.</p>
+      <div class="links"><a href="https://github.com/novovictus/wtg-ha-redline" target="_blank" rel="noopener noreferrer">View Repo</a></div>
+      <div><span class="tag">Home Assistant</span><span class="tag">MQTT</span><span class="tag">dashboard examples</span><span class="tag">GPU telemetry</span></div>
     </div>
 
     <div class="card">
       <h2>BLE Propane Monitor for Home Assistant</h2>
-      <p>
-        A no-nonsense ESPHome reference implementation for reading compatible BLE
-        propane tank monitor advertisements with an ESP32 and exposing normalized
-        level, sensor state, and RSSI entities in Home Assistant.
-      </p>
+      <p>A no-nonsense ESPHome reference implementation for reading compatible BLE propane tank monitor advertisements with an ESP32 and exposing normalized level, sensor state, and RSSI entities in Home Assistant.</p>
       <div class="links">
-        <a href="https://github.com/novovictus/ha-ble-propane-monitor" target="_blank">View Repo</a>
-        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/examples/esphome/propane-monitor.yaml" target="_blank">ESPHome Example</a>
-        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/docs/protocol-notes.md" target="_blank">Protocol Notes</a>
-        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/docs/references.md" target="_blank">References</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor" target="_blank" rel="noopener noreferrer">View Repo</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/examples/esphome/propane-monitor.yaml" target="_blank" rel="noopener noreferrer">ESPHome Example</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/docs/protocol-notes.md" target="_blank" rel="noopener noreferrer">Protocol Notes</a>
+        <a href="https://github.com/novovictus/ha-ble-propane-monitor/blob/main/docs/references.md" target="_blank" rel="noopener noreferrer">References</a>
       </div>
-      <div>
-        <span class="tag">BLE</span>
-        <span class="tag">ESPHome</span>
-        <span class="tag">Home Assistant</span>
-        <span class="tag">protocol analysis</span>
-      </div>
+      <div><span class="tag">BLE</span><span class="tag">ESPHome</span><span class="tag">Home Assistant</span><span class="tag">protocol analysis</span></div>
     </div>
 
     <div class="card">
       <h2>Home Assistant Shop Ventilation Controller</h2>
-      <p>
-        A Home Assistant field-cycle automation for nighttime shop heat extraction,
-        using bay-door state, AC/heat state, outdoor temperature, outdoor humidity,
-        floor temperature, and a damper/fan to reduce hot mornings while preserving
-        daytime AC operation and passive equalization behavior.
-      </p>
+      <p>A Home Assistant field-cycle automation for nighttime shop heat extraction, using bay-door state, AC/heat state, outdoor temperature, outdoor humidity, floor temperature, and a damper/fan to reduce hot mornings while preserving daytime AC operation and passive equalization behavior.</p>
       <div class="links">
-        <a href="https://github.com/novovictus/ha-shop-ventilation" target="_blank">View Repo</a>
-        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/home-assistant/shop-night-purge.yaml" target="_blank">Automation YAML</a>
-        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/night-purge-process.md" target="_blank">Process Notes</a>
-        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/2026-06-30-heatwave-test.md" target="_blank">Heatwave Test</a>
-        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/entity-map.md" target="_blank">Entity Map</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation" target="_blank" rel="noopener noreferrer">View Repo</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/home-assistant/shop-night-purge.yaml" target="_blank" rel="noopener noreferrer">Automation YAML</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/night-purge-process.md" target="_blank" rel="noopener noreferrer">Process Notes</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/2026-06-30-heatwave-test.md" target="_blank" rel="noopener noreferrer">Heatwave Test</a>
+        <a href="https://github.com/novovictus/ha-shop-ventilation/blob/main/docs/entity-map.md" target="_blank" rel="noopener noreferrer">Entity Map</a>
       </div>
-      <div>
-        <span class="tag">Home Assistant</span>
-        <span class="tag">heat extraction</span>
-        <span class="tag">shop automation</span>
-        <span class="tag">thermal mass</span>
-      </div>
+      <div><span class="tag">Home Assistant</span><span class="tag">heat extraction</span><span class="tag">shop automation</span><span class="tag">thermal mass</span></div>
     </div>
 
     <div class="card">
       <h2>Power Monitoring and Automation</h2>
-      <p>
-        Instrumentation and automation research around shore power, electrical state,
-        and environment-aware control loops. The goal is practical monitoring that can
-        feed reliable automation without unnecessary platform complexity.
-      </p>
-      <div>
-        <span class="tag">power monitoring</span>
-        <span class="tag">automation</span>
-        <span class="tag">Home Assistant</span>
-        <span class="tag">edge systems</span>
-      </div>
+      <p>Instrumentation and automation research around shore power, electrical state, and environment-aware control loops. The goal is practical monitoring that can feed reliable automation without unnecessary platform complexity.</p>
+      <div><span class="tag">power monitoring</span><span class="tag">automation</span><span class="tag">Home Assistant</span><span class="tag">edge systems</span></div>
     </div>
 
     <div class="card">
       <h2>Distributed Home Automation Systems</h2>
-      <p>
-        Concept work exploring multi-node Home Assistant deployments, coordination
-        patterns, management surfaces, and system-level observability across local
-        automation environments.
-      </p>
-      <div>
-        <span class="tag">Home Assistant</span>
-        <span class="tag">orchestration</span>
-        <span class="tag">control plane</span>
-        <span class="tag">observability</span>
-      </div>
+      <p>Concept work exploring multi-node Home Assistant deployments, coordination patterns, management surfaces, and system-level observability across local automation environments.</p>
+      <div><span class="tag">Home Assistant</span><span class="tag">orchestration</span><span class="tag">control plane</span><span class="tag">observability</span></div>
     </div>
 
     <div class="card">
       <h2>UniSystem Chronicles</h2>
-      <p>
-        Restoration chronicle and technical notes for a Nintendo VS. UniSystem
-        conversion in an original orange Donkey Kong Jr. cabinet, including cabinet
-        provenance, board inventory, PPU/ROM relationships, repair logs, and photo evidence.
-      </p>
+      <p>Restoration chronicle and technical notes for a Nintendo VS. UniSystem conversion in an original orange Donkey Kong Jr. cabinet, including cabinet provenance, board inventory, PPU/ROM relationships, repair logs, and photo evidence.</p>
       <div class="links">
-        <a href="https://github.com/novovictus/unisystem-chronicles" target="_blank">View Repo</a>
-        <a href="https://github.com/novovictus/unisystem-chronicles/blob/main/README.md" target="_blank">Project README</a>
-        <a href="https://photos.app.goo.gl/nQhC1So1yUntDKtJA" target="_blank">Initial Photos</a>
+        <a href="https://github.com/novovictus/unisystem-chronicles" target="_blank" rel="noopener noreferrer">View Repo</a>
+        <a href="https://github.com/novovictus/unisystem-chronicles/blob/main/README.md" target="_blank" rel="noopener noreferrer">Project README</a>
+        <a href="https://photos.app.goo.gl/nQhC1So1yUntDKtJA" target="_blank" rel="noopener noreferrer">Initial Photos</a>
       </div>
-      <div>
-        <span class="tag">Nintendo VS. UniSystem</span>
-        <span class="tag">arcade restoration</span>
-        <span class="tag">hardware notes</span>
-        <span class="tag">preservation</span>
-      </div>
+      <div><span class="tag">Nintendo VS. UniSystem</span><span class="tag">arcade restoration</span><span class="tag">hardware notes</span><span class="tag">preservation</span></div>
     </div>
 
     <div class="card">
       <h2>Side Quests</h2>
-      <p>
-        Smaller engineering projects, field fixes, and practical infrastructure builds
-        that warrant documentation but do not need dedicated repositories. These are
-        one-off artifacts, bench notes, hardware hardening passes, and edge-system
-        experiments where the useful output is the observed behavior, measured result,
-        or build pattern rather than a maintained codebase.
-      </p>
-      <p>
-        The intent is to keep the small wins visible without inflating them into full
-        projects: enough context to make the work repeatable, enough measurement to
-        make the result useful, and enough restraint to leave each artifact in its
-        proper weight class.
-      </p>
-      <div class="links sidequest-links">
-        <a href="side-quests/nuc-tailscale-exit-node-cooling.html">NUC Tailscale Exit Node Cooling</a>
-        <a href="side-quests/home-assistant-proxmox-tailscale-migration.html">Home Assistant Proxmox Migration</a>
-        <a href="side-quests/power-tool-18650-rebuild.html">Power-Tool 18650 Rebuild Work Log</a>
-        <a href="https://github.com/novovictus/unisystem-chronicles/blob/main/docs/hardware/eprom-programming-notes.md" target="_blank">EPROM Eraser Hardening Notes</a>
+      <p>Smaller engineering projects, field fixes, and practical infrastructure builds that warrant documentation but do not need dedicated repositories. These are one-off artifacts, bench notes, hardware hardening passes, and edge-system experiments where the useful output is the observed behavior, measured result, or build pattern rather than a maintained codebase.</p>
+      <p>The intent is to keep the small wins visible without inflating them into full projects: enough context to make the work repeatable, enough measurement to make the result useful, and enough restraint to leave each artifact in its proper weight class.</p>
+      <div class="sidequest-links">
+        <div class="sidequest-item"><a href="/side-quests/nuc-tailscale-exit-node-cooling.html">NUC Tailscale Exit Node Cooling</a><span>Open-air thermal stabilization with measured idle and sustained-load results.</span></div>
+        <div class="sidequest-item"><a href="/side-quests/home-assistant-proxmox-tailscale-migration.html">Home Assistant Proxmox Migration</a><span>Two-site HAOS migration with separate Tailscale routing and Zigbee continuity.</span></div>
+        <div class="sidequest-item"><a href="/side-quests/power-tool-18650-rebuild.html">Power-Tool 18650 Rebuild</a><span>Measured work log for matched-cell replacement while retaining OEM pack electronics.</span></div>
+        <div class="sidequest-item"><a href="https://github.com/novovictus/unisystem-chronicles/blob/main/docs/hardware/eprom-programming-notes.md" target="_blank" rel="noopener noreferrer">EPROM Eraser Hardening Notes</a><span>Electrical and mechanical hardening notes for repeatable EPROM preservation work.</span></div>
       </div>
-      <div>
-        <span class="tag">side quests</span>
-        <span class="tag">field engineering</span>
-        <span class="tag">hardware notes</span>
-        <span class="tag">bench safety</span>
-        <span class="tag">EPROM preservation</span>
-        <span class="tag">Home Assistant</span>
-        <span class="tag">Proxmox</span>
-        <span class="tag">Tailscale</span>
-        <span class="tag">edge systems</span>
-      </div>
+      <div><span class="tag">side quests</span><span class="tag">field engineering</span><span class="tag">hardware notes</span><span class="tag">bench safety</span><span class="tag">EPROM preservation</span><span class="tag">Home Assistant</span><span class="tag">Proxmox</span><span class="tag">Tailscale</span><span class="tag">edge systems</span></div>
     </div>
 
-    <p class="quote">
-      <a href="https://www.youtube.com/watch?v=2WFFhicVeXI&amp;t=600s" target="_blank" rel="noopener noreferrer">“The difference between screwing around and science is writing it down.”</a>
-    </p>
-
-    <p class="muted">
-      GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a><br />
-      Contact: <a href="mailto:contact@ninja-neer.net">contact@ninja-neer.net</a>
-    </p>
+    <p class="quote"><a href="https://www.youtube.com/watch?v=2WFFhicVeXI&amp;t=600s" target="_blank" rel="noopener noreferrer">“The difference between screwing around and science is writing it down.”</a></p>
+    <p class="muted">GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a><br />Contact: <a href="mailto:contact@ninja-neer.net">contact@ninja-neer.net</a></p>
   </div>
 </body>
 </html>
