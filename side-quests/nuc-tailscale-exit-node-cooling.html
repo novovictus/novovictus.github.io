@@ -4,119 +4,30 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NUC Tailscale Exit Node Cooling | novovictus</title>
-  <meta name="description" content="Side quest engineering log for thermally stabilizing an open-air NUC as a quiet Tailscale exit node." />
+  <meta name="description" content="Side quest engineering log for thermally stabilizing an open-air NUC during its earlier service as a quiet Windows Tailscale exit node." />
   <link rel="canonical" href="https://ninja-neer.net/side-quests/nuc-tailscale-exit-node-cooling.html" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="NUC Tailscale Exit Node Cooling" />
-  <meta property="og:description" content="A stripped-down Windows NUC repurposed as a quiet Tailscale exit node, then thermally stabilized with targeted heatsinks and low RPM airflow." />
+  <meta property="og:description" content="An open-air NUC, then serving as a dedicated Windows Tailscale exit node, thermally stabilized with targeted heatsinks and low-RPM airflow." />
   <meta property="og:url" content="https://ninja-neer.net/side-quests/nuc-tailscale-exit-node-cooling.html" />
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #0f1115;
-      color: #e6e8ee;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      margin-top: 32px;
-      margin-bottom: 8px;
-    }
-
-    p, li {
-      color: #a7adbb;
-      line-height: 1.55;
-    }
-
-    a {
-      color: #78a6ff;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .card {
-      border: 1px solid #2a2f3a;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      background: #171a21;
-    }
-
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0;
-      margin-top: 12px;
-    }
-
-    .links a {
-      display: inline-block;
-      margin-right: 14px;
-    }
-
-    .links a + a {
-      border-left: 2px solid #5f6b82;
-      padding-left: 14px;
-    }
-
-    .tag {
-      display: inline-block;
-      margin-top: 10px;
-      margin-right: 6px;
-      padding: 4px 8px;
-      border: 1px solid #2a2f3a;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      color: #a7adbb;
-    }
-
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .metric {
-      border: 1px solid #2a2f3a;
-      border-radius: 10px;
-      padding: 14px;
-      background: #11141a;
-    }
-
-    .metric strong {
-      display: block;
-      font-size: 1.6rem;
-      color: #e6e8ee;
-    }
-
-    .metric span {
-      display: block;
-      margin-top: 4px;
-      color: #a7adbb;
-      font-size: 0.9rem;
-    }
-
-    .muted {
-      color: #777;
-      font-size: 0.9rem;
-    }
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0f1115; color: #e6e8ee; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    h2 { margin-top: 32px; margin-bottom: 8px; }
+    p, li { color: #a7adbb; line-height: 1.55; }
+    a { color: #78a6ff; font-weight: bold; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .card { border: 1px solid #2a2f3a; border-radius: 12px; padding: 20px; margin-top: 20px; background: #171a21; }
+    .links { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-top: 12px; }
+    .links a { display: inline-block; margin-right: 14px; }
+    .links a + a { border-left: 2px solid #5f6b82; padding-left: 14px; }
+    .tag { display: inline-block; margin-top: 10px; margin-right: 6px; padding: 4px 8px; border: 1px solid #2a2f3a; border-radius: 999px; font-size: 0.75rem; color: #a7adbb; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+    .metric { border: 1px solid #2a2f3a; border-radius: 10px; padding: 14px; background: #11141a; }
+    .metric strong { display: block; font-size: 1.6rem; color: #e6e8ee; }
+    .metric span { display: block; margin-top: 4px; color: #a7adbb; font-size: 0.9rem; }
+    .muted { color: #777; font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -125,9 +36,8 @@
 
     <h1>NUC Tailscale Exit Node: Open-Air Cooling Stabilization</h1>
     <p>
-      A small side quest: an Intel NUC as a quiet Tailscale
-      exit node cooling the open-air hardware with heatsinks
-      and low-RPM airflow.
+      A small side quest to thermally stabilize an open-air Intel NUC while it was serving
+      as a quiet, dedicated Tailscale exit node, using targeted heatsinks and low-RPM airflow.
     </p>
 
     <div class="links">
@@ -143,70 +53,69 @@
     </div>
 
     <div class="card">
+      <h2>Lifecycle Note</h2>
+      <p>
+        This cooling pass was performed during the system's earlier life as a dedicated
+        Windows Tailscale exit node. The hardware was later repurposed as a Proxmox host
+        while retaining the same open-air cooling arrangement.
+      </p>
+      <p>
+        <a href="home-assistant-proxmox-tailscale-migration.html">See the later Home Assistant and Proxmox migration.</a>
+      </p>
+    </div>
+
+    <div class="card">
       <h2>Measured Result</h2>
       <p>
         The final sustained-load temperature landed below the platform's previous idle operating temperature.
       </p>
       <div class="metric-grid">
-        <div class="metric">
-          <strong>~92°F</strong>
-          <span>Initial idle reading</span>
-        </div>
-        <div class="metric">
-          <strong>~125°F</strong>
-          <span>Initial full CPU load after 5 minutes</span>
-        </div>
-        <div class="metric">
-          <strong>~88°F</strong>
-          <span>Final full CPU load after 5 minutes</span>
-        </div>
+        <div class="metric"><strong>~92°F</strong><span>Initial idle reading</span></div>
+        <div class="metric"><strong>~125°F</strong><span>Initial full CPU load after 5 minutes</span></div>
+        <div class="metric"><strong>~88°F</strong><span>Final full CPU load after 5 minutes</span></div>
       </div>
     </div>
 
     <h2>Build Context</h2>
     <p>
-      The NUC was built as a dedicated Tailscale exit node. The software build was
-      intentionally minimal: strip down as far as practical, install the
-      Tailscale executable, log in, and add the required route. The hardware work
-      was the part worth documenting.
+      The NUC was originally built as a dedicated Tailscale exit node. The software build
+      was intentionally minimal: strip down as far as practical, install Tailscale, log in,
+      and add the required route. The hardware work was the part worth documenting.
     </p>
     <p>
-      Because the system is running as an open-air platform, the goal was quiet
-      sustained reliability rather than enclosure aesthetics.
+      Because the system was running as an open-air platform, the goal was quiet sustained
+      reliability rather than enclosure aesthetics.
     </p>
 
     <h2>Thermal Pass</h2>
     <p>
-      The sticker was removed from the copper heatsink, the surface
-      was cleaned with automotive cleaner to remove adhesive residue, and heatsinks
-      were stacked onto the copper wherever there was useful surface area.
+      The sticker was removed from the copper heatsink, the surface was cleaned with
+      automotive cleaner to remove adhesive residue, and heatsinks were stacked onto the
+      copper wherever there was useful surface area.
     </p>
     <p>
-      The surrounding board components were probed under load and any chip
-      that climbed past roughly 100°F received a small heatsink. Larger heatsinks
-      were added to the NVMe SSD and exposed RAM chips where they physically made
-      sense.
+      The surrounding board components were probed under load. Any chip that climbed past
+      roughly 100°F received a small heatsink. Larger heatsinks were added to the NVMe SSD
+      and exposed RAM chips where they physically made sense.
     </p>
-    <p>
-      The heatsinks were aligned parallel to the existing airflow path.
-    </p>
+    <p>The heatsinks were aligned parallel to the existing airflow path.</p>
 
     <h2>Airflow</h2>
     <p>
-      An 80 mm fan was mounted behind the integrated blower and powered from a
-      lower-voltage wall wart that kept the fan running at lower RPMs for reduced
-      noise while still adding useful board-level airflow across the open platform.
+      An 80 mm fan was mounted behind the integrated blower and powered from a lower-voltage
+      wall wart. This kept the fan at lower RPM for reduced noise while still adding useful
+      board-level airflow across the open platform.
     </p>
 
     <h2>Result</h2>
     <p>
-      Before the modifications, the system measured about 92°F at idle and about
-      125°F after five minutes of full CPU load. After the passive heatsink pass and
-      low-RPM airflow assist, the same sustained-load window measured about 88°F.
+      Before the modifications, the system measured about 92°F at idle and about 125°F
+      after five minutes of full CPU load. After the passive heatsink pass and low-RPM
+      airflow assist, the same sustained-load window measured about 88°F.
     </p>
     <p>
-      That makes the result simple: full-load temperature after the build was lower
-      than the original idle temperature.
+      The result is straightforward: full-load temperature after the build was lower than
+      the original idle temperature.
     </p>
 
     <p class="muted" style="margin-top:40px;">
