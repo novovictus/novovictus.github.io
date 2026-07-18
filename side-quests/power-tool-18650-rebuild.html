@@ -49,10 +49,13 @@
     <div class="card">
       <h2>Status</h2>
       <p>
-        Materials are on hand and incoming-cell screening is the next recorded phase.
-        This page documents observations and decisions as the work progresses. It is not
-        a repair tutorial.
+        Teardown, pack-layout documentation, cell removal, board-lead cleanup, replacement
+        lead preparation, and initial charging are complete. The next phase is rebuilding
+        each cell array in its original configuration, reinserting the assemblies into the
+        pack structures, and reconnecting the retained boards. This page documents observations
+        and decisions as the work progresses. It is not a repair tutorial.
       </p>
+      <p><a href="https://photos.app.goo.gl/bBk7p1CUENwdpNvF9" target="_blank">Build Photo Album</a></p>
     </div>
 
     <h2>Initial Packs</h2>
@@ -102,6 +105,24 @@
       <li>Kapton tape</li>
     </ul>
 
+    <h2>Completed Work</h2>
+    <ul>
+      <li>Documented the original cells, pack layouts, series/parallel geometry, and board connections before removal.</li>
+      <li>Cut the original interconnects destructively with side snips to separate the exhausted arrays.</li>
+      <li>Observed an arc when a cut connection contacted the conductive cell casing, confirming the casing as an active shorting path during teardown.</li>
+      <li>Released the original cells from the plastic cages while preserving the reusable pack structures and electronics.</li>
+      <li>Desoldered the remaining cut board leads and cleared the connection points with a solder sucker.</li>
+      <li>Cut replacement main leads, formed the required angles, and spot-welded the angled interfaces in preparation for final assembly.</li>
+    </ul>
+
+    <h2>Cell Charging</h2>
+    <p>
+      The new cells were charged individually in four-cell lots. Each lot required roughly
+      four hours to reach the charger's full indication, with final displayed voltage near
+      4.22 V per cell. This establishes a common charged starting condition for assembly;
+      it is not a measured discharge-capacity result.
+    </p>
+
     <h2>Charger Role and Limitations</h2>
     <p>
       The charger provides independent bays, 4.2 V lithium-ion charging, selectable
@@ -109,20 +130,6 @@
       It is suitable for gross incoming-cell screening, but it is not being treated as a
       calibrated analyzer. It does not provide controlled discharge-capacity testing or
       verified internal-resistance measurement.
-    </p>
-
-    <h2>Incoming-Cell Screening</h2>
-    <p>The initial qualification pass records:</p>
-    <ul>
-      <li>Incoming open-circuit voltage</li>
-      <li>Charge behavior at a common 500 mA setting</li>
-      <li>Final indicated voltage and charge time</li>
-      <li>Relative case temperature during charging</li>
-      <li>Rested voltage and gross self-discharge outliers</li>
-    </ul>
-    <p>
-      The objective is to reject obvious outliers and assemble the closest-behaving groups
-      from one new batch. The process is not represented as calibrated capacity or impedance binning.
     </p>
 
     <h2>Assembly Assumptions</h2>
@@ -134,6 +141,15 @@
       <li>Establish welder settings by destructive peel testing on scrap or retired cells before welding service cells.</li>
       <li>Use soldering only where needed for board tabs, sense leads, thermistor leads, or terminal connections, while avoiding prolonged direct cell heating.</li>
     </ul>
+
+    <h2>Next Step</h2>
+    <ol>
+      <li>Reassemble the charged cells in the original Ryobi 5S2P and DeWalt 5S1P configurations.</li>
+      <li>Reinsert each rebuilt array into its plastic pack structure.</li>
+      <li>Verify orientation, group voltages, and total pack voltage before reconnecting electronics.</li>
+      <li>Spot-weld the retained board leads to the new battery interconnects.</li>
+      <li>Perform mechanical, continuity, and thermal checks before first charger insertion.</li>
+    </ol>
 
     <h2>Pre-Energization Checks</h2>
     <ul>
@@ -166,11 +182,9 @@
     <h2>Open Items</h2>
     <ul>
       <li>Record the exact Ryobi pack model and original cell markings.</li>
-      <li>Record individual Ryobi series-group voltages before array removal, if still measurable.</li>
-      <li>Record original bus geometry and any fuse-link construction.</li>
+      <li>Record final group voltages and total pack voltages before board reconnection.</li>
       <li>Record exact spot-welder markings and successful settings for 0.15 mm pure nickel.</li>
-      <li>Determine whether charger bays show consistent voltage or thermal offsets.</li>
-      <li>Add first-build results, charged voltages, tool behavior, and thermal observations.</li>
+      <li>Add first-build results, charger acceptance, tool behavior, and thermal observations.</li>
     </ul>
 
     <p class="muted" style="margin-top:40px;">
