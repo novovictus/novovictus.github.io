@@ -22,9 +22,6 @@
     .card { border: 1px solid #2a2f3a; border-radius: 12px; padding: 20px; margin-top: 20px; background: #171a21; }
     .tag { display: inline-block; margin-top: 10px; margin-right: 6px; padding: 4px 8px; border: 1px solid #2a2f3a; border-radius: 999px; font-size: 0.75rem; color: #a7adbb; }
     .muted { color: #777; font-size: 0.9rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { border: 1px solid #2a2f3a; padding: 8px; text-align: left; }
-    th { color: #e6e8ee; background: #171a21; }
   </style>
 </head>
 <body>
@@ -49,10 +46,8 @@
     <div class="card">
       <h2>Status</h2>
       <p>
-        Teardown, pack-layout documentation, cell removal, board-lead cleanup, replacement
-        lead preparation, and initial charging are complete. The next phase is rebuilding
-        each cell array in its original configuration, reinserting the assemblies into the
-        pack structures, and reconnecting the retained boards. This page documents observations
+        The DeWalt DCB207 rebuild is assembled, load-tested, charger-tested, and closed.
+        The Ryobi 5S2P rebuild remains the next major phase. This page documents observations
         and decisions as the work progresses. It is not a repair tutorial.
       </p>
       <p><a href="https://photos.app.goo.gl/bBk7p1CUENwdpNvF9" target="_blank">Build Photo Album</a></p>
@@ -77,8 +72,8 @@
     <h3>DeWalt DCB207</h3>
     <p>
       This pack was previously rebuilt with recycled cells from another project. It
-      returned to service and survived roughly one year of actual tool duty. The next
-      rebuild replaces that exhausted salvage set with five new matched high-drain cells.
+      returned to service and survived roughly one year of actual tool duty. The exhausted
+      salvage set has now been replaced with five new matched high-drain cells.
     </p>
 
     <h2>Ordered Materials</h2>
@@ -89,13 +84,6 @@
     </ul>
     <p>Order total: USD 108.06 shipped and taxed.</p>
 
-    <h2>Planned Cell Allocation</h2>
-    <ul>
-      <li>10 cells: Ryobi 5S2P rebuild</li>
-      <li>5 cells: DeWalt 5S1P rebuild</li>
-      <li>10 cells: reserve, weld setup, or later side-quest work</li>
-    </ul>
-
     <h2>Equipment</h2>
     <ul>
       <li>Portable battery spot welder, Amazon ASIN B09V2R1TKD</li>
@@ -103,40 +91,52 @@
       <li>Digital multimeter</li>
       <li>IR thermometer</li>
       <li>Kapton tape</li>
+      <li>USB power meter and selectable high-load resistor board</li>
     </ul>
 
-    <h2>Completed Work</h2>
+    <h2>Completed Teardown and Preparation</h2>
     <ul>
       <li>Documented the original cells, pack layouts, series/parallel geometry, and board connections before removal.</li>
       <li>Cut the original interconnects destructively with side snips to separate the exhausted arrays.</li>
       <li>Observed an arc when a cut connection contacted the conductive cell casing, confirming the casing as an active shorting path during teardown.</li>
       <li>Released the original cells from the plastic cages while preserving the reusable pack structures and electronics.</li>
       <li>Desoldered the remaining cut board leads and cleared the connection points with a solder sucker.</li>
-      <li>Cut replacement main leads, formed the required angles, and spot-welded the angled interfaces in preparation for final assembly.</li>
+      <li>Cut replacement main leads, formed the required angles, and spot-welded the angled interfaces.</li>
     </ul>
 
     <h2>Cell Charging</h2>
     <p>
       The new cells were charged individually in four-cell lots. Each lot required roughly
       four hours to reach the charger's full indication, with final displayed voltage near
-      4.22 V per cell. This establishes a common charged starting condition for assembly;
-      it is not a measured discharge-capacity result.
+      4.22 V per cell. This established a common charged starting condition for assembly;
+      it was not a measured discharge-capacity result.
     </p>
 
-    <h2>Charger Role and Limitations</h2>
+    <h2>DeWalt Rebuild and Validation</h2>
+    <ul>
+      <li>Reassembled the five-cell 5S1P battery array in the original carrier and orientation.</li>
+      <li>Installed the positive-terminal insulators and tacked the new nickel interconnects in place.</li>
+      <li>Added extra Kapton tape around exposed interfaces and contact areas for additional insulation.</li>
+      <li>Partially installed the shell and performed an initial functional test in a small shop vacuum.</li>
+      <li>Connected a third-party DeWalt adapter with USB output to a USB meter and selectable high-load resistor board.</li>
+      <li>Held the electrical load until the resistor bank approached its thermal limit, then checked pack and cell temperatures.</li>
+      <li>The meter showed approximately 4.80 V at 3.16 A, about 15.18 W, while the resistor-board temperature display was near 30 C.</li>
+      <li>IR checks shown in the photo set recorded approximately 91.9 F on the loaded resistor area and approximately 48.7 F on the battery area at the measured point.</li>
+      <li>Placed the partially assembled pack on the OEM charger and observed normal operation with no smoke or visible abnormal behavior.</li>
+      <li>Trimmed limited plastic from the shell with side snips to clear the wider replacement nickel and completed final assembly.</li>
+    </ul>
+
     <p>
-      The charger provides independent bays, 4.2 V lithium-ion charging, selectable
-      500 mA or 1000 mA current, and per-bay voltage, current, and elapsed-time indication.
-      It is suitable for gross incoming-cell screening, but it is not being treated as a
-      calibrated analyzer. It does not provide controlled discharge-capacity testing or
-      verified internal-resistance measurement.
+      The DeWalt pack passed the initial tool, resistive-load, thermal, and charger checks.
+      These are practical functional checks rather than calibrated capacity, cycle-life, or
+      maximum-discharge qualification.
     </p>
 
     <h2>Assembly Assumptions</h2>
     <ul>
       <li>Install a positive-terminal insulator on each new cell before laying out nickel.</li>
       <li>Preserve and reuse OEM carriers and insulation where intact.</li>
-      <li>Reassess insulation after the original arrays are removed and replacement geometry is known.</li>
+      <li>Use additional Kapton where replacement geometry creates exposed or compressed contact risks.</li>
       <li>Use 8 mm x 0.15 mm pure nickel, with parallel paths where needed to reproduce effective OEM bus geometry.</li>
       <li>Establish welder settings by destructive peel testing on scrap or retired cells before welding service cells.</li>
       <li>Use soldering only where needed for board tabs, sense leads, thermistor leads, or terminal connections, while avoiding prolonged direct cell heating.</li>
@@ -144,11 +144,11 @@
 
     <h2>Next Step</h2>
     <ol>
-      <li>Reassemble the charged cells in the original Ryobi 5S2P and DeWalt 5S1P configurations.</li>
-      <li>Reinsert each rebuilt array into its plastic pack structure.</li>
-      <li>Verify orientation, group voltages, and total pack voltage before reconnecting electronics.</li>
-      <li>Spot-weld the retained board leads to the new battery interconnects.</li>
-      <li>Perform mechanical, continuity, and thermal checks before first charger insertion.</li>
+      <li>Reassemble the charged Ryobi cells in the original 5S2P configuration.</li>
+      <li>Reinsert the rebuilt array into the original plastic pack structure.</li>
+      <li>Verify orientation, parallel-group voltages, node progression, and total pack voltage before reconnecting electronics.</li>
+      <li>Reconnect the retained board leads to the new battery interconnects.</li>
+      <li>Perform mechanical, continuity, charger, tool-load, and thermal checks before final closure.</li>
     </ol>
 
     <h2>Pre-Energization Checks</h2>
@@ -163,28 +163,13 @@
       <li>Confirm no nickel edge can contact a cell shoulder or case under compression.</li>
     </ul>
 
-    <h2>Initial Success Criteria</h2>
-    <h3>DeWalt</h3>
-    <ul>
-      <li>The new 5S1P array is accepted by the OEM charger.</li>
-      <li>The pack reaches normal charged voltage.</li>
-      <li>The pack operates a representative tool without immediate voltage collapse or abnormal heating.</li>
-      <li>Performance materially exceeds the exhausted salvage-cell rebuild.</li>
-    </ul>
-
-    <h3>Ryobi</h3>
-    <ul>
-      <li>The new 5S2P array is accepted by the OEM charger.</li>
-      <li>All five parallel groups remain closely matched during the first charge.</li>
-      <li>The pack returns to normal tool operation without abnormal heating or early cutoff.</li>
-    </ul>
-
     <h2>Open Items</h2>
     <ul>
       <li>Record the exact Ryobi pack model and original cell markings.</li>
-      <li>Record final group voltages and total pack voltages before board reconnection.</li>
+      <li>Record final Ryobi parallel-group and total pack voltages before board reconnection.</li>
       <li>Record exact spot-welder markings and successful settings for 0.15 mm pure nickel.</li>
-      <li>Add first-build results, charger acceptance, tool behavior, and thermal observations.</li>
+      <li>Add Ryobi charger acceptance, tool behavior, and thermal observations.</li>
+      <li>Track the rebuilt DeWalt pack through normal tool use for any early imbalance, heating, or mechanical issues.</li>
     </ul>
 
     <p class="muted" style="margin-top:40px;">
