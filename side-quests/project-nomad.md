@@ -11,7 +11,7 @@ Project NOMAD is a mobile cyber systems laboratory built around a high-roof Ford
 Current platform configuration:
 
 - 2027 Ford Transit T-250 Cargo Van
-- 148-inch wheelbase, Long body
+- 148-inch wheelbase, Long body (not Extended)
 - High Roof
 - 9,150 lb GVWR
 - 3.5L EcoBoost V6
@@ -42,14 +42,17 @@ The cargo area will remain a purpose-built technical workspace rather than a gen
 
 - Isolated LiFePO4 house electrical system
 - Alternator-fed DC-DC charging
-- Shore-power input and inverter/charger
+- Rooftop solar array
+- MPPT solar charging, either integrated into the selected power system or through a dedicated controller
+- Shore-power input
+- Inverter/charger for AC loads and shore charging
 - Dedicated AC and DC distribution
 - Environmental control suitable for occupied technical work and equipment
 - Structured network, communications, and lab instrumentation
 - Secure equipment storage and serviceable wiring paths
 - Durable floor, wall, and ceiling treatments without sacrificing unnecessary interior volume
 
-The factory electrical system will be treated as the vehicle-side source and control interface. Lab power, networking, and equipment systems will be designed as distinct upfit layers rather than extensions of the OEM battery system.
+The house system will accept energy from alternator, solar, and shore power while remaining electrically distinct from the Transit starting/accessory battery system except through purpose-built charging and control interfaces. The factory electrical system will be treated as the vehicle-side source and control interface rather than as the lab battery bank.
 
 ## Current phase
 
