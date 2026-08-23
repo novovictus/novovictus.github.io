@@ -1,12 +1,10 @@
-# Project NOMAD
+# Project N.O.M.A.D
 
 *Network Operations Mobile Adversarial Defense*
 
-**Mobile Cyber Systems Laboratory**
-
 **Status:** Planning and vehicle configuration
 
-Project NOMAD is a mobile cyber systems laboratory built around a high-roof Ford Transit platform. The goal is a self-contained field workspace for cybersecurity, systems engineering, hardware and protocol work, networking, local compute, instrumentation, and related technical research.
+Project N.O.M.A.D is built around a high-roof Ford Transit platform. The goal is a self-contained field workspace for cybersecurity, systems engineering, hardware and protocol work, networking, local compute, instrumentation, and related technical research.
 
 ## Vehicle baseline
 
