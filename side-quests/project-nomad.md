@@ -1,6 +1,8 @@
 # Project NOMAD
 
-*Mobile Cyber Systems Laboratory*
+*Network Operations Mobile Adversarial Defense*
+
+**Mobile Cyber Systems Laboratory**
 
 **Status:** Planning and vehicle configuration
 
