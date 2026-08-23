@@ -1,4 +1,4 @@
-# Project NOMAD
+# Project N.O.M.A.D
 
 *Network Operations Mobile Adversarial Defense*
 
