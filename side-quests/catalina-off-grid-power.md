@@ -67,15 +67,15 @@ The base kit includes the rigid 200 W panel, GP-RVC-30-MPPT controller, controll
 
 ### Phase 2: Battery bank
 
-Replace the dealer-installed marine battery with a single high-capacity LiFePO4 bank. Preferred installation is low and structurally secured in the storage cubby if practical. A protected tongue installation remains an alternative if weight distribution and environmental protection are acceptable.
+Replace the dealer-installed marine battery with a single high-capacity, self-heating LiFePO4 bank. Preferred installation is low and structurally secured in the storage cubby if practical. A protected tongue installation remains an alternative if weight distribution and environmental protection are acceptable.
 
 | Component | Model / part number | Qty. | Reference price | Link |
 | --- | --- | ---: | ---: | --- |
-| 12.8 V 600 Ah LiFePO4 RV battery | Vatrer D-12V-600AH, 300 A BMS | 1 | $1,259.99 | https://www.vatrerpower.com/products/vatrer-12v-600ah-bluetooth-lithium-rv-battery |
+| 12.8 V 600 Ah self-heating LiFePO4 RV battery | Vatrer D-12V-600AH-JR, 300 A BMS | 1 | $1,369.99 | https://www.vatrerpower.com/products/vatrer-12v-600ah-self-heating-lithium-battery |
 
-Nominal storage is 7.68 kWh. The 300 A continuous BMS is appropriately sized for the planned 3,000 W inverter class without requiring parallel batteries solely for discharge-current capacity.
+Nominal storage is 7.68 kWh. The 300 A continuous BMS is appropriately sized for the planned 3,000 W inverter class without requiring parallel batteries solely for discharge-current capacity. The battery includes Bluetooth monitoring, low-temperature protection, and automatic self-heating that starts below 32 F and heats the cells to approximately 41 F before normal charging resumes.
 
-**Cumulative planned hardware:** approximately $1,892
+**Cumulative planned hardware:** approximately $2,002
 
 ### Phase 3: Inverter, shore charging, and high-current DC distribution
 
@@ -90,7 +90,7 @@ The AIC-3000-12-SL provides the core integration point for 120 V operation: 3,00
 
 The DC installation should include appropriately rated battery disconnect, Class T protection, high-current positive and negative distribution, and mechanical battery restraint. Exact ancillary hardware should be finalized from measured cable lengths and the selected battery/inverter mounting positions rather than purchased generically in advance.
 
-**Cumulative planned hardware:** approximately $3,848
+**Cumulative planned hardware:** approximately $3,958
 
 ### Phase 4: Solar expansion to 400 W
 
@@ -101,7 +101,7 @@ Add one matching Eclipse expansion panel after the base system has been proven i
 | 200 W rigid Eclipse expansion | Go Power GP-ECLIPSE-200-E / 83316 | 1 | $279.99 | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
 
 **Array:** 400 W nominal  
-**Cumulative planned hardware:** approximately $4,128
+**Cumulative planned hardware:** approximately $4,238
 
 ### Phase 5: Solar expansion to controller maximum
 
@@ -112,7 +112,7 @@ Add the third matching panel if roof layout and measured system performance just
 | 200 W rigid Eclipse expansion | Go Power GP-ECLIPSE-200-E / 83316 | 1 | $279.99 | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
 
 **Final array:** 600 W nominal  
-**Cumulative planned hardware:** approximately $4,408
+**Cumulative planned hardware:** approximately $4,518
 
 This reaches the GP-RVC-30-MPPT's documented 600 W PV input rating for a 12 V battery system. Additional roof solar would require another/stacked controller or a redesigned solar subsystem rather than simply attaching more panels to this controller.
 
@@ -176,6 +176,7 @@ If testing shows the factory path is insufficient or poorly controlled for LiFeP
 - Mount the MPPT controller vertically, indoors, with required ventilation.
 - Verify actual roof layout before purchasing all three panels. The rigid panels are approximately 59.1 x 26.3 inches each.
 - Use the battery manufacturer's LiFePO4 charge limits when configuring every charging source.
+- The selected battery is IP65 and self-heating, which improves viability for a protected exterior tongue installation, but an interior cubby remains preferable if structure, cable length, and packaging support it.
 - Confirm the exact GE A/C model before purchasing the soft starter.
 - Confirm generator neutral/ground behavior with the actual Power Watchdog and inverter/charger installation before adding any bonding accessory.
 - Measure actual 7-pin voltage and current before selecting the tow-charging configuration.
@@ -184,7 +185,7 @@ If testing shows the factory path is insufficient or poorly controlled for LiFeP
 
 The target system is approximately:
 
-- 7.68 kWh nominal LiFePO4 storage
+- 7.68 kWh nominal self-heating LiFePO4 storage
 - 3,000 W pure-sine AC inverter capacity
 - 600 W roof solar
 - 30 A MPPT solar charging
