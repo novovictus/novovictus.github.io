@@ -16,7 +16,9 @@ The planned system uses three independent charging sources feeding a common 12 V
 
 The battery bank supplies the existing 12 V trailer loads directly and the 120 V system through a 3,000 W pure-sine inverter/charger.
 
-The battery architecture is modular. The initial system uses one matching 200 Ah self-heating LiFePO4 battery and can expand to two or three batteries in parallel. A three-battery bank provides approximately 600 Ah / 7.68 kWh nominal storage while improving serviceability and reducing dependence on a single large battery. The permanent DC distribution should be designed from the first installation for the eventual multi-battery bank.
+The battery architecture is modular. The initial system uses one Vatrer 12.8 V 300 Ah self-heating Bluetooth LiFePO4 battery with a 200 A BMS and can expand to a second matching battery in parallel. A two-battery bank provides approximately 600 Ah / 7.68 kWh nominal storage while preserving redundancy and reducing the number of parallel branches, fuses, disconnects, cables, and balance points compared with a three-battery design. The permanent DC distribution should be designed from the first installation for the eventual two-battery bank.
+
+The 300 Ah platform is also being treated as a candidate battery standard for Project N.O.M.A.D. The Catalina serves as the lower-risk validation platform for capacity, BMS behavior, self-heating, Bluetooth telemetry, charging compatibility, and parallel operation before any broader standardization decision.
 
 Existing equipment already available:
 
@@ -52,6 +54,8 @@ The AIC inverter/charger is available both as a bare PowerTrak-ready unit and as
 
 The same principle applies to the broader build. At this project's scale, reduced integration time, documented interoperability, supportability, and a cleaner warranty path can justify a higher component price. Custom integration remains possible where it materially improves the design, particularly at the battery bank.
 
+The 300 Ah Vatrer is preferred over the previously considered 200 Ah class because the gateway cost is only modestly higher while starting capacity increases by 50 percent. It reaches half of the intended final 600 Ah bank immediately, remains physically serviceable, and allows the final target to be reached with one later matching battery instead of two. Fewer batteries also mean fewer high-current connection points and fewer components that can become imbalance or service issues.
+
 Prices below are planning references and should be rechecked before purchase.
 
 ## Purchase and installation phases
@@ -68,7 +72,7 @@ No purchase required.
 
 ### Phase 1: Battery, inverter/charger, and permanent electrical backbone
 
-Install one 200 Ah self-heating LiFePO4 battery and the complete 3,000 W inverter/charger system. This creates a functional shore-charged and battery-powered trailer before solar is added and allows the core electrical architecture to be validated independently.
+Install one Vatrer 12.8 V 300 Ah self-heating Bluetooth LiFePO4 battery with 200 A BMS and the complete 3,000 W inverter/charger system. This creates a functional shore-charged and battery-powered trailer before solar is added and allows the core electrical architecture to be validated independently.
 
 Preferred inverter integration:
 
@@ -77,15 +81,17 @@ Preferred inverter integration:
 | 3,000 W advanced inverter/charger with display | Go Power AIC-3000-12-SL-DIS-KIT | 1 | Verify at purchase | https://gopowersolar.com/products/aic-series-3000-watt-sl-advanced-inverter-charger/ |
 | Bare inverter alternative | Go Power AIC-3000-12-SL / 83885 | 1 | Verify at purchase | https://autoplicity.com/21124805-go-power-83885-aic300012sl-3000w-advanced-inverter150a-charger-12v-30a-ats-pt-ready |
 | Matched inverter DC installation hardware | Go Power GP-DC-KIT5 or documented equivalent | 1 | Verify at purchase | https://gopowersolar.com/products/inverter-installation-kits/ |
-| Self-heating LiFePO4 battery | 12.8 V 200 Ah class, exact model TBD | 1 | Verify at purchase | TBD |
+| Self-heating LiFePO4 battery | Vatrer 12.8 V 300 Ah Bluetooth, self-heating, 200 A BMS | 1 | $629.99 reference | https://www.vatrerpower.com/products/vatrer-12v-300ah-bluetooth-lifepo4-lithium-battery-with-self-heating-200a-bms-supports-low-temp-charging-4-f-5000-cycles-2560w-power |
 
 The AIC-3000-12-SL provides 3,000 W pure-sine inverter capacity, high-rate shore/generator charging, and transfer functionality appropriate for the trailer's existing 30 A service. The preferred DIS package adds the PowerTrak display/controller and matched communications rather than treating those as later custom integration items.
 
-The permanent DC backbone should be sized and arranged from the beginning for an eventual three-battery bank. This includes appropriately rated battery protection, disconnects, positive and negative distribution, inverter protection, cabling, and mechanical battery restraint. Exact cable lengths and fixtures should be selected after measuring the final battery, bus, fuse, disconnect, and inverter locations.
+The permanent DC backbone should be sized and arranged from the beginning for an eventual two-battery bank. This includes appropriately rated battery protection, disconnects, positive and negative distribution, inverter protection, cabling, and mechanical battery restraint. Exact cable lengths and fixtures should be selected after measuring the final battery, bus, fuse, disconnect, and inverter locations.
 
-One 200 Ah battery is a legitimate operating configuration for Phase 1. It does not need to support the AIC's full 3,000 W output continuously. At full inverter output, a 12 V system can approach approximately 250 A or more of DC current after conversion losses and battery-voltage variation. Actual inverter loading must therefore remain within the selected battery BMS continuous and surge discharge limits until additional batteries are installed.
+One 300 Ah battery is a legitimate operating configuration for Phase 1 and provides approximately 3.84 kWh nominal storage. Its 200 A BMS does not imply unrestricted use of the AIC's full 3,000 W output. At full inverter output, a 12 V system can approach approximately 250 A or more of DC current after conversion losses and battery-voltage variation. Actual inverter loading must therefore remain within the selected battery BMS continuous and surge discharge limits until the second battery is installed.
 
-The AIC's charging current must likewise be configured to the selected battery manufacturer's maximum charge-current specification. Adding parallel batteries later increases both capacity and aggregate charge/discharge capability.
+With two matching 300 Ah batteries connected through a balanced parallel distribution, aggregate current capability is ample for the AIC's 3,000 W class while individual battery current is substantially reduced. The second battery also provides service redundancy: if one battery must be isolated, the camper retains approximately 300 Ah / 3.84 kWh of nominal storage.
+
+The AIC's charging current must likewise be configured to the selected battery manufacturer's maximum charge-current specification. Adding the second parallel battery later increases both capacity and aggregate charge/discharge capability.
 
 Phase 1 validation should include:
 
@@ -96,6 +102,7 @@ Phase 1 validation should include:
 - Controlled microwave testing within the battery BMS limits
 - Inverter standby consumption
 - PowerTrak and app monitoring
+- Vatrer Bluetooth telemetry, cell balance, BMS behavior, self-heating behavior, and state-of-charge tracking
 - Generator charging behavior with AIC input/charge limits configured for the RYOBI's 1,650 W continuous output
 
 ### Phase 2: Base solar and off-grid charging
@@ -124,18 +131,18 @@ Because the initial build occurs at the end of summer, battery-powered A/C is no
 
 ### Phase 4+: Incremental battery and solar expansion
 
-Add matching 200 Ah batteries and matching 200 W Eclipse expansion panels over the following months based on measured consumption, solar recovery, available roof area, and winter-trip requirements.
+Add one matching 300 Ah Vatrer battery and matching 200 W Eclipse expansion panels over the following months based on measured consumption, solar recovery, available roof area, and winter-trip requirements.
 
 Potential expansion components:
 
 | Component | Model / part number | Maximum additional qty. | Reference price | Link |
 | --- | --- | ---: | ---: | --- |
-| Matching self-heating 200 Ah LiFePO4 battery | Same model as Phase 1 | 2 | Verify at purchase | TBD |
+| Matching self-heating 300 Ah LiFePO4 battery | Same Vatrer 300 Ah model as Phase 1 | 1 | Verify at purchase | https://www.vatrerpower.com/products/vatrer-12v-300ah-bluetooth-lifepo4-lithium-battery-with-self-heating-200a-bms-supports-low-temp-charging-4-f-5000-cycles-2560w-power |
 | 200 W rigid Eclipse expansion | Go Power GP-ECLIPSE-200-E / 83316 | 2 | Verify at purchase | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
 
-The planning ceiling remains approximately 600 Ah / 7.68 kWh of battery storage and 600 W of roof solar, but those numbers are targets rather than mandatory purchases. Each additional battery increases runtime and aggregate current capability. Each additional panel increases daytime production and recovery rate. Actual measurements from the earlier phases should determine whether the final expansion is necessary before the winter trip.
+The planning ceiling remains approximately 600 Ah / 7.68 kWh of battery storage and 600 W of roof solar, but those numbers are targets rather than mandatory purchases. The second battery doubles runtime, provides full-bank current headroom for the inverter, and preserves 300 Ah of usable storage if one unit must be isolated. Each additional panel increases daytime production and recovery rate. Actual measurements from the earlier phases should determine whether the final expansion is necessary before the winter trip.
 
-For a three-battery parallel bank, use matching battery models and follow the manufacturer's parallel-battery requirements. Batteries should be individually protected and isolatable where appropriate, connected through a balanced low-resistance distribution arrangement, and brought to compatible state of charge before being paralleled. This allows a failed or serviceable battery to be isolated while retaining useful capacity from the remaining bank.
+For the two-battery parallel bank, use matching battery models and follow the manufacturer's parallel-battery requirements. Batteries should be individually protected and isolatable where appropriate, connected through a balanced low-resistance distribution arrangement, and brought to compatible state of charge before being paralleled. This allows a failed or serviceable battery to be isolated while retaining a useful 300 Ah bank.
 
 ### Optional tow-vehicle charging upgrade
 
@@ -169,7 +176,7 @@ This preserves normal campground operation while automatically recharging the ho
 
 ### Solar
 
-200 to 600 W matching roof array -> GP-RVC-30-MPPT -> modular 200 to 600 Ah LiFePO4 bank.
+200 to 600 W matching roof array -> GP-RVC-30-MPPT -> modular 300 to 600 Ah LiFePO4 bank.
 
 Solar remains active whenever available and can coexist with other regulated charging sources.
 
@@ -177,7 +184,7 @@ Solar remains active whenever available and can coexist with other regulated cha
 
 LiFePO4 bank -> AIC-3000-12-SL -> trailer 120 V distribution.
 
-Phase 1 begins with 200 Ah of storage and expands as measured requirements justify it. Normal AC loads are available immediately, while maximum inverter loading remains constrained by the installed battery bank's aggregate BMS capability.
+Phase 1 begins with 300 Ah / 3.84 kWh of nominal storage and expands to 600 Ah / 7.68 kWh if measured requirements justify the second battery. Normal AC loads are available immediately, while maximum inverter loading remains constrained by the installed battery bank's aggregate BMS capability.
 
 ### Generator backup
 
@@ -197,7 +204,7 @@ If testing shows the factory path is insufficient or poorly controlled for LiFeP
 - Verify the cubby floor and underlying structure for the selected modular battery installation.
 - Mechanically restrain every battery against movement in every axis.
 - Keep battery/bus-to-inverter 4/0 runs as short as practical.
-- Size the permanent DC distribution for the eventual three-battery bank even when only one battery is initially installed.
+- Size the permanent DC distribution for the eventual two-battery 600 Ah bank even when only one battery is initially installed.
 - Respect each battery's BMS continuous discharge, surge discharge, maximum charge current, low-temperature, and parallel-operation limits.
 - Configure AIC charging current for both the installed battery capacity and the available AC source.
 - Mount the MPPT controller indoors according to manufacturer ventilation and orientation requirements.
@@ -211,7 +218,7 @@ If testing shows the factory path is insufficient or poorly controlled for LiFeP
 
 The target system can grow to approximately:
 
-- Three matching 200 Ah self-heating LiFePO4 batteries
+- Two matching Vatrer 12.8 V 300 Ah self-heating Bluetooth LiFePO4 batteries with 200 A BMSs
 - 600 Ah / 7.68 kWh nominal storage
 - 3,000 W pure-sine AC inverter capacity
 - PowerTrak display/controller and Go Power/Dometic communications
@@ -224,6 +231,6 @@ The target system can grow to approximately:
 - Micro-Air EasyStart-assisted GE Profile PLH13XAHWH1 13,500 BTU A/C and heat-pump operation
 - Propane primary off-grid winter heat with HA-controlled resistance heat as a battery-backed temperature-floor fallback
 
-The 600 Ah / 600 W configuration is a planning ceiling rather than a requirement. The design deliberately reaches useful operating states early and uses measured performance to decide how far expansion needs to proceed before the winter trip.
+The 600 Ah / 600 W configuration is a planning ceiling rather than a requirement. The design deliberately reaches a useful 300 Ah / 3.84 kWh operating state in Phase 1 and uses measured performance to decide whether the second battery and full solar expansion are needed before the winter trip.
 
 The generator, solar array, battery bank, shore connection, and propane heating system are complementary rather than treating any one source as sufficient under every condition. Battery storage supplies silent operation and short-duration demand, solar handles ongoing recovery, shore power provides normal full-service operation and electric heat, propane provides efficient off-grid winter heat, and the existing RYOBI provides an independent electrical recovery path when solar is unavailable.
