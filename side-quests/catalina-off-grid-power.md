@@ -2,9 +2,9 @@
 
 **Status:** Planning and phased implementation
 
-This sidequest documents a phased electrical upgrade for the Coachmen Catalina Summit Series 7 134BHX. The design goal is to preserve normal shore-power and tow-vehicle operation while adding enough battery, inverter, solar, and generator capability to support meaningful off-grid use, including limited operation of the factory 13,500 BTU A/C and heat pump.
+This sidequest documents a phased electrical upgrade for the Coachmen Catalina Summit Series 7 134BHX. The design goal is to preserve normal shore-power and tow-vehicle operation while adding battery, inverter, solar, and generator capability for meaningful off-grid use. The implementation is intentionally incremental so each phase produces a usable system and measured results can guide later expansion.
 
-The trailer is factory pre-wired for Go Power solar. The identified prep location is labeled for a maximum 30 amps of solar and is intended for the Go Power/Dometic controller installation.
+The trailer is factory pre-wired for Go Power solar. The identified prep location is labeled for a maximum 30 amps of solar and is intended for the Go Power/Dometic controller installation. The preferred integration strategy is to retain the Go Power/Dometic ecosystem for the inverter/charger, display and communications, MPPT controller, and matching solar panels. This reduces custom integration work, keeps expansion within documented configurations, and provides a cleaner support and warranty path. Third-party LiFePO4 batteries remain appropriate because Dometic battery offerings do not align as well with the desired capacity, modularity, and value.
 
 ## Design baseline
 
@@ -14,7 +14,9 @@ The planned system uses three independent charging sources feeding a common 12 V
 - 120 V shore power or portable generator through an inverter/charger
 - Tow-vehicle charging, retained initially and optionally upgraded to controlled DC-DC charging
 
-The battery bank then supplies the existing 12 V trailer loads directly and the 120 V system through a 3,000 W pure-sine inverter/charger.
+The battery bank supplies the existing 12 V trailer loads directly and the 120 V system through a 3,000 W pure-sine inverter/charger.
+
+The battery architecture is modular. The initial system uses one matching 200 Ah self-heating LiFePO4 battery and can expand to two or three batteries in parallel. A three-battery bank provides approximately 600 Ah / 7.68 kWh nominal storage while improving serviceability and reducing dependence on a single large battery. The permanent DC distribution should be designed from the first installation for the eventual multi-battery bank.
 
 Existing equipment already available:
 
@@ -25,10 +27,11 @@ Existing equipment already available:
 - Factory 30 A shore-power service
 - Factory tow-vehicle charging circuit
 - Factory Go Power Wired for Solar prep
+- Home Assistant monitoring and temperature-control capability
 
 ## Solar controller limits
 
-The Go Power GP-RVC-30-MPPT supplied with the Eclipse system is the design constraint for the initial solar array:
+The Go Power GP-RVC-30-MPPT supplied with the Eclipse system is the design constraint for the planned solar array:
 
 - System voltage: 12/24 V
 - Rated charge current: 30 A
@@ -37,11 +40,21 @@ The Go Power GP-RVC-30-MPPT supplied with the Eclipse system is the design const
 - Battery profiles include LiFePO4
 - RS485 and CAN bus communication
 
-The 200 W rigid Eclipse panel is rated at 20.4 Vmp, 9.6 A Imp, and 24.09 Voc. The intended 600 W configuration is three matching 200 W panels while remaining within the controller's documented 600 W limit at 12 V.
+The 200 W rigid Eclipse panel is rated at 20.4 Vmp, 9.6 A Imp, and 24.09 Voc. The maximum planned configuration is three matching 200 W panels while remaining within the controller's documented 600 W limit at 12 V.
+
+Using matching Go Power panels throughout the phased expansion preserves documented electrical compatibility, connectors, mounting approach, physical dimensions, and controller support rather than requiring the array to be redesigned as capacity is added.
+
+## Acquisition and installation strategy
+
+Purchase order and installation order do not need to be identical. Unusually favorable pricing can justify acquiring a major component before its installation phase, but the permanent installation should still be completed as an integrated system rather than creating temporary wiring that will be replaced later.
+
+The AIC inverter/charger is available both as a bare PowerTrak-ready unit and as part of the AIC-3000-12-SL-DIS-KIT. The complete display package is preferred because the intended installation includes the PowerTrak screen/controller and matched communications. A deeply discounted bare AIC can still be considered, but its actual system cost should include the separately sourced display, communications, cabling, fixtures, protection, and integration effort rather than comparing only inverter purchase prices.
+
+The same principle applies to the broader build. At this project's scale, reduced integration time, documented interoperability, supportability, and a cleaner warranty path can justify a higher component price. Custom integration remains possible where it materially improves the design, particularly at the battery bank.
+
+Prices below are planning references and should be rechecked before purchase.
 
 ## Purchase and installation phases
-
-Prices below are planning references captured in August 2026 and should be rechecked before purchase.
 
 ### Phase 0: Existing equipment
 
@@ -51,74 +64,55 @@ No purchase required.
 | --- | --- | ---: | --- | --- |
 | Inverter generator | RYOBI RYI2022VNM | Already owned | https://www.directtoolsoutlet.com/products/RYI2022VNM | Generator backup and bulk charging source |
 | 30 A electrical protection | Hughes Power Watchdog WPC30A | Already owned | https://hughesautoformers.com/product/pwd30-epo/ | Shore/generator input monitoring and protection |
-| Factory solar prep | Go Power / Dometic Wired for Solar | Installed | https://gopowersolar.com/wired-for-solar/ | Existing solar wiring and controller location |
+| Factory solar prep | Go Power / Dometic Wired for Solar | Installed | https://gopowersolar.com/wired-for-solar/ | Existing roof-to-controller solar wiring and controller location |
 
-### Phase 1: Base solar
+### Phase 1: Battery, inverter/charger, and permanent electrical backbone
 
-Install the supported Go Power Eclipse kit using the factory solar prep. This provides immediate battery maintenance and establishes the permanent MPPT infrastructure.
+Install one 200 Ah self-heating LiFePO4 battery and the complete 3,000 W inverter/charger system. This creates a functional shore-charged and battery-powered trailer before solar is added and allows the core electrical architecture to be validated independently.
 
-| Component | Model / part number | Qty. | Reference price | Link |
-| --- | --- | ---: | ---: | --- |
-| 200 W rigid Eclipse solar kit | Go Power GP-ECLIPSE-200 / 83315 | 1 | $631.99 | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
-
-The base kit includes the rigid 200 W panel, GP-RVC-30-MPPT controller, controller remote/monitoring hardware, solar cabling, and mounting hardware.
-
-**Phase total:** approximately $632
-
-### Phase 2: Battery bank
-
-Replace the dealer-installed marine battery with a single high-capacity, self-heating LiFePO4 bank. Preferred installation is low and structurally secured in the storage cubby if practical. A protected tongue installation remains an alternative if weight distribution and environmental protection are acceptable.
+Preferred inverter integration:
 
 | Component | Model / part number | Qty. | Reference price | Link |
 | --- | --- | ---: | ---: | --- |
-| 12.8 V 600 Ah self-heating LiFePO4 RV battery | Vatrer D-12V-600AH-JR, 300 A BMS | 1 | $1,369.99 | https://www.vatrerpower.com/products/vatrer-12v-600ah-self-heating-lithium-battery |
+| 3,000 W advanced inverter/charger with display | Go Power AIC-3000-12-SL-DIS-KIT | 1 | Verify at purchase | https://gopowersolar.com/products/aic-series-3000-watt-sl-advanced-inverter-charger/ |
+| Bare inverter alternative | Go Power AIC-3000-12-SL / 83885 | 1 | Verify at purchase | https://autoplicity.com/21124805-go-power-83885-aic300012sl-3000w-advanced-inverter150a-charger-12v-30a-ats-pt-ready |
+| Matched inverter DC installation hardware | Go Power GP-DC-KIT5 or documented equivalent | 1 | Verify at purchase | https://gopowersolar.com/products/inverter-installation-kits/ |
+| Self-heating LiFePO4 battery | 12.8 V 200 Ah class, exact model TBD | 1 | Verify at purchase | TBD |
 
-Nominal storage is 7.68 kWh. The 300 A continuous BMS is appropriately sized for the planned 3,000 W inverter class without requiring parallel batteries solely for discharge-current capacity. The battery includes Bluetooth monitoring, low-temperature protection, and automatic self-heating that starts below 32 F and heats the cells to approximately 41 F before normal charging resumes.
+The AIC-3000-12-SL provides 3,000 W pure-sine inverter capacity, high-rate shore/generator charging, and transfer functionality appropriate for the trailer's existing 30 A service. The preferred DIS package adds the PowerTrak display/controller and matched communications rather than treating those as later custom integration items.
 
-**Cumulative planned hardware:** approximately $2,002
+The permanent DC backbone should be sized and arranged from the beginning for an eventual three-battery bank. This includes appropriately rated battery protection, disconnects, positive and negative distribution, inverter protection, cabling, and mechanical battery restraint. Exact cable lengths and fixtures should be selected after measuring the final battery, bus, fuse, disconnect, and inverter locations.
 
-### Phase 3: Inverter, shore charging, and high-current DC distribution
+One 200 Ah battery is a legitimate operating configuration for Phase 1. It does not need to support the AIC's full 3,000 W output continuously. At full inverter output, a 12 V system can approach approximately 250 A or more of DC current after conversion losses and battery-voltage variation. Actual inverter loading must therefore remain within the selected battery BMS continuous and surge discharge limits until additional batteries are installed.
 
-Install the inverter/charger close to the battery bank to minimize the high-current 12 V cable run. This phase converts the battery system into a whole-trailer AC source and provides high-rate charging whenever shore or generator AC is available.
+The AIC's charging current must likewise be configured to the selected battery manufacturer's maximum charge-current specification. Adding parallel batteries later increases both capacity and aggregate charge/discharge capability.
 
-| Component | Model / part number | Qty. | Reference price | Link |
-| --- | --- | ---: | ---: | --- |
-| 3,000 W advanced inverter/charger | Go Power AIC-3000-12-SL | 1 | $1,419.99 | https://gopowersolar.com/products/aic-series-3000-watt-sl-advanced-inverter-charger/ |
-| 4/0 inverter installation kit | Go Power GP-DC-KIT5 | 1 | $535.99 | https://gopowersolar.com/products/inverter-installation-kits/ |
+Phase 1 validation should include:
 
-The AIC-3000-12-SL provides the core integration point for 120 V operation: 3,000 W inverter capacity, shore/generator charging, and transfer functionality for the trailer's 30 A service. Charging current should be configured for the battery and available AC source rather than assuming maximum charger output in every operating mode.
+- Shore-power passthrough and transfer behavior
+- LiFePO4 charging configuration and measured charging current
+- Normal 12 V trailer operation
+- Inverter operation for outlets, laptops, monitor, refrigerator-related loads, and other normal AC loads
+- Controlled microwave testing within the battery BMS limits
+- Inverter standby consumption
+- PowerTrak and app monitoring
+- Generator charging behavior with AIC input/charge limits configured for the RYOBI's 1,650 W continuous output
 
-The DC installation should include appropriately rated battery disconnect, Class T protection, high-current positive and negative distribution, and mechanical battery restraint. Exact ancillary hardware should be finalized from measured cable lengths and the selected battery/inverter mounting positions rather than purchased generically in advance.
+### Phase 2: Base solar and off-grid charging
 
-**Cumulative planned hardware:** approximately $3,958
-
-### Phase 4: Solar expansion to 400 W
-
-Add one matching Eclipse expansion panel after the base system has been proven in service.
-
-| Component | Model / part number | Qty. | Reference price | Link |
-| --- | --- | ---: | ---: | --- |
-| 200 W rigid Eclipse expansion | Go Power GP-ECLIPSE-200-E / 83316 | 1 | $279.99 | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
-
-**Array:** 400 W nominal  
-**Cumulative planned hardware:** approximately $4,238
-
-### Phase 5: Solar expansion to controller maximum
-
-Add the third matching panel if roof layout and measured system performance justify it.
+Install the supported Go Power Eclipse system using the factory solar prep. This adds renewable off-grid recovery after the battery/inverter system has already been commissioned.
 
 | Component | Model / part number | Qty. | Reference price | Link |
 | --- | --- | ---: | ---: | --- |
-| 200 W rigid Eclipse expansion | Go Power GP-ECLIPSE-200-E / 83316 | 1 | $279.99 | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
+| 200 W rigid Eclipse solar kit | Go Power GP-ECLIPSE-200 / 83315 | 1 | Verify at purchase | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
 
-**Final array:** 600 W nominal  
-**Cumulative planned hardware:** approximately $4,518
+The base kit establishes the GP-RVC-30-MPPT controller, first matching 200 W panel, solar cabling, and mounting infrastructure. The existing factory roof/main solar wiring run should be retained after its conductor size, polarity, routing, and condition are verified during installation.
 
-This reaches the GP-RVC-30-MPPT's documented 600 W PV input rating for a 12 V battery system. Additional roof solar would require another/stacked controller or a redesigned solar subsystem rather than simply attaching more panels to this controller.
+At the end of Phase 2 the camper can charge from shore/generator, solar, and the retained tow-vehicle circuit.
 
-### Phase 6: A/C startup optimization
+### Phase 3: A/C startup optimization
 
-Add a soft starter matched to the installed GE 13,500 BTU rooftop unit before treating either the 3,000 W inverter or the 1,650 W continuous-output RYOBI as routine A/C sources.
+Add a soft starter matched to the installed GE 13,500 BTU rooftop unit before treating either the 3,000 W inverter or the 1,650 W continuous-output RYOBI as an A/C source.
 
 | Component | Model / part number | Qty. | Reference price | Link |
 | --- | --- | ---: | ---: | --- |
@@ -126,7 +120,24 @@ Add a soft starter matched to the installed GE 13,500 BTU rooftop unit before tr
 
 The exact soft-start model should be selected from the air conditioner's actual model and electrical data plate rather than inferred only from the 13,500 BTU rating.
 
-### Phase 7: Optional tow-vehicle charging upgrade
+Because the initial build occurs at the end of summer, battery-powered A/C is not required to validate Phases 1 and 2. The soft start establishes the capability for later warm-weather testing after the battery bank has also had time to expand.
+
+### Phase 4+: Incremental battery and solar expansion
+
+Add matching 200 Ah batteries and matching 200 W Eclipse expansion panels over the following months based on measured consumption, solar recovery, available roof area, and winter-trip requirements.
+
+Potential expansion components:
+
+| Component | Model / part number | Maximum additional qty. | Reference price | Link |
+| --- | --- | ---: | ---: | --- |
+| Matching self-heating 200 Ah LiFePO4 battery | Same model as Phase 1 | 2 | Verify at purchase | TBD |
+| 200 W rigid Eclipse expansion | Go Power GP-ECLIPSE-200-E / 83316 | 2 | Verify at purchase | https://gopowersolar.com/products/rigid-eclipse-solar-kit/ |
+
+The planning ceiling remains approximately 600 Ah / 7.68 kWh of battery storage and 600 W of roof solar, but those numbers are targets rather than mandatory purchases. Each additional battery increases runtime and aggregate current capability. Each additional panel increases daytime production and recovery rate. Actual measurements from the earlier phases should determine whether the final expansion is necessary before the winter trip.
+
+For a three-battery parallel bank, use matching battery models and follow the manufacturer's parallel-battery requirements. Batteries should be individually protected and isolatable where appropriate, connected through a balanced low-resistance distribution arrangement, and brought to compatible state of charge before being paralleled. This allows a failed or serviceable battery to be isolated while retaining useful capacity from the remaining bank.
+
+### Optional tow-vehicle charging upgrade
 
 The existing 7-pin charge feed can remain part of the trailer system, but high-current lithium charging should not be assumed from the factory wiring. If towing charge performance is inadequate, add a controlled DC-DC charger and size its input current to the actual vehicle/trailer wiring.
 
@@ -136,25 +147,37 @@ The existing 7-pin charge feed can remain part of the trailer system, but high-c
 
 The Orion XS can be current-limited below its 50 A maximum. A dedicated higher-current vehicle feed should use appropriately sized conductors, fusing, and connectors rather than attempting to draw 50 A through the stock 7-pin circuit.
 
+## Seasonal heating strategy
+
+The winter operating plan does not depend on battery-powered heat-pump operation.
+
+Below approximately 30 F, propane is the primary off-grid heat source. When shore power is available, resistive electric heat can be used instead of consuming propane. The heat pump remains useful when ambient conditions are appropriate but is not treated as the critical winter heat source.
+
+Prior real-world winter operation provides a useful baseline. The camper remained usable with a single 750 W resistive heater during cold Lancaster conditions. At its lower setting, measured consumption was below approximately 400 W and the camper remained well above freezing with outside temperatures in the sub-20s F. The camper was also supporting normal office/electrical use during this period.
+
+Home Assistant was configured to enable the heater only after interior temperature fell into the 40s. That strategy can continue off grid as a backup heat layer. The propane furnace remains primary, while the HA-controlled resistive heater can establish a lower temperature floor if propane is exhausted or the furnace fails overnight.
+
+The backup automation should include a battery state-of-charge cutoff appropriate to the installed bank and an alert when resistance heat is cycling unexpectedly. This prevents the fallback heater from silently exhausting the battery while also making repeated backup operation an indication that the primary heat source needs attention.
+
 ## Operating architecture
 
 ### Shore power
 
 30 A shore inlet -> Power Watchdog -> AIC inverter/charger -> trailer AC distribution and LiFePO4 charging.
 
-This preserves normal campground operation while automatically recharging the house bank.
+This preserves normal campground operation while automatically recharging the house bank. Resistive heat can be used normally when shore capacity permits.
 
 ### Solar
 
-200 to 600 W roof array -> GP-RVC-30-MPPT -> 600 Ah LiFePO4 bank.
+200 to 600 W matching roof array -> GP-RVC-30-MPPT -> modular 200 to 600 Ah LiFePO4 bank.
 
 Solar remains active whenever available and can coexist with other regulated charging sources.
 
 ### Off-grid AC
 
-600 Ah LiFePO4 bank -> AIC-3000-12-SL -> trailer 120 V distribution.
+LiFePO4 bank -> AIC-3000-12-SL -> trailer 120 V distribution.
 
-This provides silent operation for normal AC loads and limited A/C or heat-pump runtime without starting the generator.
+Phase 1 begins with 200 Ah of storage and expands as measured requirements justify it. Normal AC loads are available immediately, while maximum inverter loading remains constrained by the installed battery bank's aggregate BMS capability.
 
 ### Generator backup
 
@@ -170,29 +193,37 @@ If testing shows the factory path is insufficient or poorly controlled for LiFeP
 
 ## Installation notes
 
-- Verify the cubby floor and underlying structure before locating the approximately 108 lb battery there.
-- Mechanically restrain the battery against movement in every axis.
-- Keep the battery-to-inverter 4/0 run as short as practical.
-- Mount the MPPT controller vertically, indoors, with required ventilation.
+- Determine battery, inverter, fuse, disconnect, and bus locations together before ordering final high-current cable lengths.
+- Verify the cubby floor and underlying structure for the selected modular battery installation.
+- Mechanically restrain every battery against movement in every axis.
+- Keep battery/bus-to-inverter 4/0 runs as short as practical.
+- Size the permanent DC distribution for the eventual three-battery bank even when only one battery is initially installed.
+- Respect each battery's BMS continuous discharge, surge discharge, maximum charge current, low-temperature, and parallel-operation limits.
+- Configure AIC charging current for both the installed battery capacity and the available AC source.
+- Mount the MPPT controller indoors according to manufacturer ventilation and orientation requirements.
+- Verify factory solar wiring gauge, polarity, routing, protection, and connector condition before energizing the array.
 - Verify actual roof layout before purchasing all three panels. The rigid panels are approximately 59.1 x 26.3 inches each.
-- Use the battery manufacturer's LiFePO4 charge limits when configuring every charging source.
-- The selected battery is IP65 and self-heating, which improves viability for a protected exterior tongue installation, but an interior cubby remains preferable if structure, cable length, and packaging support it.
 - Confirm the exact GE A/C model before purchasing the soft starter.
 - Confirm generator neutral/ground behavior with the actual Power Watchdog and inverter/charger installation before adding any bonding accessory.
 - Measure actual 7-pin voltage and current before selecting the tow-charging configuration.
 
 ## Planned end state
 
-The target system is approximately:
+The target system can grow to approximately:
 
-- 7.68 kWh nominal self-heating LiFePO4 storage
+- Three matching 200 Ah self-heating LiFePO4 batteries
+- 600 Ah / 7.68 kWh nominal storage
 - 3,000 W pure-sine AC inverter capacity
-- 600 W roof solar
+- PowerTrak display/controller and Go Power/Dometic communications
+- Up to 600 W of matching Go Power Eclipse roof solar
 - 30 A MPPT solar charging
 - Automatic shore-power battery charging
 - RYOBI generator backup
 - Existing Hughes Power Watchdog protection
 - Controlled tow-vehicle charging if required
 - Soft-start-assisted 13,500 BTU A/C operation
+- Propane primary off-grid winter heat with HA-controlled resistance heat as a battery-backed temperature-floor fallback
 
-The design intentionally keeps the generator, solar array, battery bank, and shore connection complementary rather than treating any one source as sufficient under every condition. The battery supplies short-term high-demand and silent operation, solar handles ongoing baseline recovery, shore power provides normal full-service operation, and the existing RYOBI provides an independent recovery path when solar is unavailable.
+The 600 Ah / 600 W configuration is a planning ceiling rather than a requirement. The design deliberately reaches useful operating states early and uses measured performance to decide how far expansion needs to proceed before the winter trip.
+
+The generator, solar array, battery bank, shore connection, and propane heating system are complementary rather than treating any one source as sufficient under every condition. Battery storage supplies silent operation and short-duration demand, solar handles ongoing recovery, shore power provides normal full-service operation and electric heat, propane provides efficient off-grid winter heat, and the existing RYOBI provides an independent electrical recovery path when solar is unavailable.
