@@ -21,7 +21,7 @@ The battery architecture is modular. The initial system uses one matching 200 Ah
 Existing equipment already available:
 
 - Coachmen Catalina Summit Series 7 134BHX
-- GE 13,500 BTU A/C with heat pump
+- GE Profile PLH13XAHWH1 13,500 BTU rooftop A/C with heat pump
 - RYOBI RYI2022VNM inverter generator, 2,050 W starting / 1,650 W running
 - Hughes Power Watchdog WPC30A
 - Factory 30 A shore-power service
@@ -112,13 +112,13 @@ At the end of Phase 2 the camper can charge from shore/generator, solar, and the
 
 ### Phase 3: A/C startup optimization
 
-Add a soft starter matched to the installed GE 13,500 BTU rooftop unit before treating either the 3,000 W inverter or the 1,650 W continuous-output RYOBI as an A/C source.
+Add a soft starter matched to the installed GE Profile PLH13XAHWH1 13,500 BTU rooftop A/C with heat pump before treating either the 3,000 W inverter or the 1,650 W continuous-output RYOBI as an A/C source.
 
 | Component | Model / part number | Qty. | Reference price | Link |
 | --- | --- | ---: | ---: | --- |
-| RV A/C soft starter | Micro-Air EasyStart Breeze, exact application model TBD after confirming GE A/C model | 1 | Verify at purchase | https://www.micro-air.com/products_easystart_399_softstarter_microair.cfm |
+| RV A/C soft starter | Micro-Air EasyStart 364, final 115 V application/SKU to verify at purchase | 1 | Verify at purchase | https://www.micro-air.com/products_easystart_364_softstarter_microair.cfm |
 
-The exact soft-start model should be selected from the air conditioner's actual model and electrical data plate rather than inferred only from the 13,500 BTU rating.
+The PLH13XAHWH1 is a conventional-compressor GE Profile heat-pump rooftop unit. GE documentation for the PLH13X family specifies heat-pump operation down to approximately 25 F. The Micro-Air EasyStart 364 is the appropriate soft-start family for this class of RV rooftop compressor, with the exact 115 V application and installation configuration to be verified against the unit data plate and current Micro-Air documentation before purchase.
 
 Because the initial build occurs at the end of summer, battery-powered A/C is not required to validate Phases 1 and 2. The soft start establishes the capability for later warm-weather testing after the battery bank has also had time to expand.
 
@@ -151,7 +151,7 @@ The Orion XS can be current-limited below its 50 A maximum. A dedicated higher-c
 
 The winter operating plan does not depend on battery-powered heat-pump operation.
 
-Below approximately 30 F, propane is the primary off-grid heat source. When shore power is available, resistive electric heat can be used instead of consuming propane. The heat pump remains useful when ambient conditions are appropriate but is not treated as the critical winter heat source.
+The installed GE Profile PLH13XAHWH1 heat pump is specified for operation down to approximately 25 F, but the off-grid strategy transitions to propane earlier when ambient temperature and heat-pump efficiency make battery operation unattractive. Below roughly 30 F, propane is therefore the practical primary off-grid heat source. When shore power is available, resistive electric heat can be used instead of consuming propane. The heat pump remains useful when ambient conditions are appropriate but is not treated as the critical winter heat source.
 
 Prior real-world winter operation provides a useful baseline. The camper remained usable with a single 750 W resistive heater during cold Lancaster conditions. At its lower setting, measured consumption was below approximately 400 W and the camper remained well above freezing with outside temperatures in the sub-20s F. The camper was also supporting normal office/electrical use during this period.
 
@@ -203,7 +203,7 @@ If testing shows the factory path is insufficient or poorly controlled for LiFeP
 - Mount the MPPT controller indoors according to manufacturer ventilation and orientation requirements.
 - Verify factory solar wiring gauge, polarity, routing, protection, and connector condition before energizing the array.
 - Verify actual roof layout before purchasing all three panels. The rigid panels are approximately 59.1 x 26.3 inches each.
-- Confirm the exact GE A/C model before purchasing the soft starter.
+- Installed rooftop HVAC is GE Profile PLH13XAHWH1, 13,500 BTU A/C with heat pump. Verify its data plate and current Micro-Air EasyStart 364 application instructions before soft-start installation.
 - Confirm generator neutral/ground behavior with the actual Power Watchdog and inverter/charger installation before adding any bonding accessory.
 - Measure actual 7-pin voltage and current before selecting the tow-charging configuration.
 
@@ -221,7 +221,7 @@ The target system can grow to approximately:
 - RYOBI generator backup
 - Existing Hughes Power Watchdog protection
 - Controlled tow-vehicle charging if required
-- Soft-start-assisted 13,500 BTU A/C operation
+- Micro-Air EasyStart-assisted GE Profile PLH13XAHWH1 13,500 BTU A/C and heat-pump operation
 - Propane primary off-grid winter heat with HA-controlled resistance heat as a battery-backed temperature-floor fallback
 
 The 600 Ah / 600 W configuration is a planning ceiling rather than a requirement. The design deliberately reaches useful operating states early and uses measured performance to decide how far expansion needs to proceed before the winter trip.
