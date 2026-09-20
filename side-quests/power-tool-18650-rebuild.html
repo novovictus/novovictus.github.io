@@ -47,8 +47,11 @@
       <h2>Status</h2>
       <p>
         The DeWalt DCB207 rebuild is assembled, load-tested, charger-tested, fully charged,
-        and closed. The Ryobi 5S2P rebuild remains the next major phase. This page documents
-        observations and decisions as the work progresses. It is not a repair tutorial.
+        and closed. The Ryobi PBP005 5S2P rebuild is disassembled and prepared, with the
+        replacement cells charged. Wide pure-nickel stock has been ordered to reproduce the
+        OEM-style cross-row bus geometry cleanly rather than stacking multiple narrow strips.
+        This page documents observations and decisions as the work progresses. It is not a
+        repair tutorial.
       </p>
       <p><a href="https://photos.app.goo.gl/bBk7p1CUENwdpNvF9" target="_blank">Build Photo Album</a></p>
     </div>
@@ -86,6 +89,7 @@
       <li>25 BAK N18650COP flat-top cells, 2500 mAh nominal, 30 A listing</li>
       <li>100 flat-top positive-terminal insulators</li>
       <li>20 ft of 8 mm x 0.15 mm pure nickel strip</li>
+      <li>0.15 mm x 27 mm pure nickel 2P strip, Amazon ASIN B07VMGTVL5, ordered for Ryobi cross-row bus fabrication</li>
     </ul>
     <p>Order total: USD 108.06 shipped and taxed.</p>
 
@@ -142,13 +146,16 @@
       <li>Install a positive-terminal insulator on each new cell before laying out nickel.</li>
       <li>Preserve and reuse OEM carriers and insulation where intact.</li>
       <li>Use additional Kapton where replacement geometry creates exposed or compressed contact risks.</li>
-      <li>Use 8 mm x 0.15 mm pure nickel, with parallel paths where needed to reproduce effective OEM bus geometry.</li>
+      <li>Use 8 mm x 0.15 mm pure nickel for straight interconnects and local connections.</li>
+      <li>Use 0.15 mm x 27 mm pure nickel stock to reproduce the wider OEM-style Ryobi cross-row bus geometry rather than stacking multiple narrow strips.</li>
       <li>Establish welder settings by destructive peel testing on scrap or retired cells before welding service cells.</li>
       <li>Use soldering only where needed for board tabs, sense leads, thermistor leads, or terminal connections, while avoiding prolonged direct cell heating.</li>
     </ul>
 
     <h2>Next Step</h2>
     <ol>
+      <li>Receive and verify the ordered 0.15 mm x 27 mm pure nickel strip.</li>
+      <li>Use the original Ryobi stamped interconnect geometry as a template for the required wide cross-row bus pieces.</li>
       <li>Reassemble the charged Ryobi cells in the original 5S2P configuration.</li>
       <li>Reinsert the rebuilt array into the original plastic pack structure.</li>
       <li>Verify orientation, parallel-group voltages, node progression, and total pack voltage before reconnecting electronics.</li>
