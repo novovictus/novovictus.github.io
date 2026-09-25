@@ -93,6 +93,13 @@
     </ul>
     <p>Order total: USD 108.06 shipped and taxed.</p>
 
+    <h2>Planned Cell Allocation</h2>
+    <ul>
+      <li>10 cells: Ryobi 5S2P rebuild</li>
+      <li>5 cells: DeWalt 5S1P rebuild</li>
+      <li>10 cells: reserve for weld setup, another pack, or later side-quest work</li>
+    </ul>
+
     <h2>Equipment</h2>
     <ul>
       <li>Portable battery spot welder, Amazon ASIN B09V2R1TKD</li>
@@ -103,14 +110,38 @@
       <li>USB power meter and selectable high-load resistor board</li>
     </ul>
 
+    <h2>Charger Role and Incoming-Cell Screening</h2>
+    <p>
+      The Keenstone charger provides four independent bays, 4.2 V lithium-ion charging,
+      selectable 500 mA or 1000 mA charge current, and per-bay indication of voltage,
+      current, and elapsed time. It was used for comparative incoming-cell screening rather
+      than as a calibrated analyzer; it does not provide a controlled discharge-capacity
+      test or verified internal-resistance measurement.
+    </p>
+    <p>The initial screening process was intended to reject gross outliers and included:</p>
+    <ul>
+      <li>Inspecting each cell for can damage, cap deformation, wrap damage, contamination, or corrosion.</li>
+      <li>Measuring incoming open-circuit voltage with the same meter.</li>
+      <li>Charging cells under a common 500 mA setting for the initial qualification pass.</li>
+      <li>Checking relative case temperature during charging.</li>
+      <li>Recording final indicated voltage and approximate charge time.</li>
+      <li>Allowing charged cells to rest and comparing rested voltage.</li>
+      <li>Rechecking after 24 to 48 hours when practical to identify gross self-discharge outliers.</li>
+      <li>Selecting the closest-behaving cells from the same new batch for each pack.</li>
+    </ul>
+    <p>
+      This screening was not represented as calibrated capacity testing or impedance binning.
+    </p>
+
     <h2>Completed Teardown and Preparation</h2>
     <ul>
-      <li>Documented the original cells, pack layouts, series/parallel geometry, and board connections before removal.</li>
+      <li>Opened both packs and documented the original cell types, mechanical layouts, series/parallel arrangements, board connections, and main-current paths before removal.</li>
       <li>Cut the original interconnects destructively with side snips to separate the exhausted arrays.</li>
       <li>Observed an arc when a cut connection contacted the conductive cell casing, confirming the casing as an active shorting path during teardown.</li>
-      <li>Released the original cells from the plastic cages while preserving the reusable pack structures and electronics.</li>
-      <li>Desoldered the remaining cut board leads and cleared the connection points with a solder sucker.</li>
-      <li>Cut replacement main leads, formed the required angles, and spot-welded the angled interfaces.</li>
+      <li>Released the original cells from their plastic cages while retaining the cages, boards, terminals, thermistors, and other reusable pack hardware.</li>
+      <li>Desoldered the remaining cut lead sections from the boards and cleared the connection points with a solder sucker.</li>
+      <li>Cut replacement main leads to length and bent them to match the required exit geometry.</li>
+      <li>Spot-welded angled nickel interfaces onto the prepared main leads for attachment to the rebuilt cell arrays.</li>
     </ul>
 
     <h2>Cell Charging</h2>
@@ -152,12 +183,25 @@
       <li>Use soldering only where needed for board tabs, sense leads, thermistor leads, or terminal connections, while avoiding prolonged direct cell heating.</li>
     </ul>
 
-    <h2>Ryobi Reassembly</h2>
+    <h2>Ryobi PBP005 Rebuild</h2>
     <ul>
-      <li>Received the 0.15 mm x 27 mm pure nickel H-strip stock.</li>
-      <li>Used the wide H-strip material to reproduce the OEM-style two-row interconnect geometry without stacking multiple narrow strips.</li>
-      <li>Tack-welded the replacement 5S2P cell array and cross-row bus connections together.</li>
-      <li>Reinstalled the rebuilt array into the original plastic pack structure and reassembled the pack.</li>
+      <li>Preserved the documented OEM 5S2P layout and retained the original board, thermistor, terminal assembly, carrier, and usable insulation.</li>
+      <li>Originally planned to reproduce the interconnects with 8 mm x 0.15 mm pure nickel, using parallel paths where needed.</li>
+      <li>After reviewing the OEM stamped cross-row bus geometry, determined that stacking multiple narrow strips would produce an unnecessarily complex interconnect.</li>
+      <li>Ordered and received 0.15 mm x 27 mm pure nickel 2P H-strip, Amazon ASIN B07VMGTVL5, to reproduce the wider two-row geometry more cleanly.</li>
+      <li>Used the original stamped interconnect layout as the physical reference for the replacement cross-row bus geometry.</li>
+      <li>Installed positive-terminal insulators and arranged the charged replacement cells in the original 5S2P orientation.</li>
+      <li>Tack-welded the H-strip and remaining nickel interconnects to form the five parallel groups and required series connections.</li>
+      <li>Reconnected the prepared board leads and associated sense connections to the corresponding battery connection points.</li>
+      <li>Reinstalled the rebuilt array into the original plastic carrier and mechanically reassembled the pack.</li>
+      <li>Retained the pre-energization checks for orientation, group-voltage progression, total voltage, insulation clearance, weld integrity, and thermistor placement before charger insertion.</li>
+    </ul>
+
+    <h2>Ryobi Validation Criteria</h2>
+    <ul>
+      <li>The rebuilt 5S2P array is accepted by the OEM charger.</li>
+      <li>All five parallel groups remain closely matched through initial validation.</li>
+      <li>The pack returns to normal tool operation without abnormal heating or early cutoff.</li>
     </ul>
 
     <h2>Next Step</h2>
@@ -184,7 +228,7 @@
     <h2>Open Items</h2>
     <ul>
       <li>Record the original Ryobi cell markings.</li>
-      <li>Record final Ryobi parallel-group and total pack voltages before board reconnection.</li>
+      <li>Record the Ryobi parallel-group and total pack voltages from the rebuild if the pre-reconnection measurements were retained.</li>
       <li>Record exact spot-welder markings and successful settings for 0.15 mm pure nickel.</li>
       <li>Add Ryobi charger acceptance, tool behavior, and thermal observations.</li>
       <li>Track the rebuilt DeWalt pack through normal tool use for any early imbalance, heating, or mechanical issues.</li>
