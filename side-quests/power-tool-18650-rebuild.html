@@ -49,9 +49,11 @@
         The DeWalt DCB207 rebuild is assembled, load-tested, charger-tested, fully charged,
         and closed. The Ryobi PBP005 5S2P rebuild has been reassembled with the replacement
         cells and wide pure-nickel H-strip interconnects tack-welded into place. The pack is
-        mechanically back together and is awaiting its first OEM charger validation. This
-        page documents observations and decisions as the work progresses. It is not a repair
-        tutorial.
+        mechanically back together. The Ryobi BMS reset procedure succeeded, indicated by
+        the expected two-LED response. On first charger insertion the pack initially showed a
+        red blink, then transitioned to green and is being left on the OEM charger for further
+        observation. This page documents observations and decisions as the work progresses.
+        It is not a repair tutorial.
       </p>
       <p><a href="https://photos.app.goo.gl/bBk7p1CUENwdpNvF9" target="_blank">Build Photo Album</a></p>
     </div>
@@ -197,6 +199,16 @@
       <li>Retained the pre-energization checks for orientation, group-voltage progression, total voltage, insulation clearance, weld integrity, and thermistor placement before charger insertion.</li>
     </ul>
 
+    <h2>Ryobi BMS Reset and Charger Validation</h2>
+    <ul>
+      <li>The rebuilt pack was not initially accepted for normal charging after reassembly.</li>
+      <li>Performed the documented J1 reset sequence on the retained Ryobi board.</li>
+      <li>The reset succeeded and produced the expected two-LED indication.</li>
+      <li>On the first OEM charger insertion after reset, the charger initially blinked red.</li>
+      <li>The charger then transitioned to green, indicating that the pack was being accepted rather than remaining in the initial fault state.</li>
+      <li>The pack is being left on the OEM charger for observation before further load testing.</li>
+    </ul>
+
     <h2>Ryobi Validation Criteria</h2>
     <ul>
       <li>The rebuilt 5S2P array is accepted by the OEM charger.</li>
@@ -206,8 +218,8 @@
 
     <h2>Next Step</h2>
     <ol>
-      <li>Perform the first OEM charger validation while monitoring for abnormal heating or behavior.</li>
-      <li>Confirm charger acceptance and termination behavior.</li>
+      <li>Continue observing the OEM charger session for normal behavior and any abnormal heating.</li>
+      <li>Confirm final charger status and termination behavior.</li>
       <li>Perform an initial moderate tool-load test.</li>
       <li>Recheck parallel-group voltages after the initial load to look for early imbalance.</li>
       <li>Record charger, tool-load, and thermal observations before considering the Ryobi rebuild complete.</li>
@@ -230,7 +242,7 @@
       <li>Record the original Ryobi cell markings.</li>
       <li>Record the Ryobi parallel-group and total pack voltages from the rebuild if the pre-reconnection measurements were retained.</li>
       <li>Record exact spot-welder markings and successful settings for 0.15 mm pure nickel.</li>
-      <li>Add Ryobi charger acceptance, tool behavior, and thermal observations.</li>
+      <li>Record final Ryobi charger termination, tool behavior, and thermal observations.</li>
       <li>Track the rebuilt DeWalt pack through normal tool use for any early imbalance, heating, or mechanical issues.</li>
     </ul>
 
