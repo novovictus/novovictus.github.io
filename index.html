@@ -130,6 +130,7 @@
         <a href="https://ninja-neer.net/training-engine/">Launch Training Engine</a>
         <a href="https://github.com/novovictus/training-engine" target="_blank" rel="noopener noreferrer">View Repo</a>
         <a href="https://github.com/novovictus/training" target="_blank" rel="noopener noreferrer">Archived First Implementation</a>
+        <a href="#" id="bank-generation-prompt" title="Tested with ChatGPT, Claude, Grok, and Perplexity">Bank Generation Prompt</a>
       </div>
       <div><span class="tag">assessment engineering</span><span class="tag">JavaScript</span><span class="tag">question banks</span><span class="tag">content validation</span></div>
     </div>
@@ -150,5 +151,14 @@
     <p class="quote"><a href="https://www.youtube.com/watch?v=2WFFhicVeXI&amp;t=600s" target="_blank" rel="noopener noreferrer">“The difference between screwing around and science is writing it down.”</a></p>
     <p class="muted">GitHub: <a href="https://github.com/novovictus">github.com/novovictus</a><br />Contact: <a href="mailto:contact@ninja-neer.net">contact@ninja-neer.net</a></p>
   </div>
+  <script>
+    document.getElementById('bank-generation-prompt')?.addEventListener('click', async event => {
+      event.preventDefault();
+
+      const prompt = `I’m studying for <EXAM NAME / CODE> and want a question bank with <NUMBER> questions. Use the instructions in https://github.com/novovictus/training-engine, including the AI bank generation guide and bank schema, then find the current official exam objectives from the vendor and create a practice bank that matches the published coverage and weighting as closely as practical. Make the questions original, scenario-focused, and technically defensible, validate every answer key and distractor before finalizing, and return only the finished Training Engine JSON bank in the correct current format.`;
+
+      await navigator.clipboard.writeText(prompt);
+    });
+  </script>
 </body>
 </html>
