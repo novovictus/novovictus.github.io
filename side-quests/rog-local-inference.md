@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Strata Coder GGUF download and expert packing complete; MTP q2_0 packing underway (2026-10-13)  
+**Status:** Strata Coder IQ1_M setup and calibration complete; formal benchmark pending (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -341,7 +341,7 @@ The final visible line was `mtp.layers.0.mlp.experts.down_proj: q2_0 235.9 MB`. 
 
 ### 2026-10-13: Start-script memory policy and calibration prompt (Step 7)
 
-Installer advanced to **Step 7: writing the start script** after the model/MTP preparation stage. The actual startup and completion of calibration are not yet reported.
+Installer advanced to **Step 7: writing the start script** after the model/MTP preparation stage. **Subsequent output confirms successful loading and completion of calibration**; detailed results are recorded in the next entry.
 
 **Automatic decision printed by installer:**
 
@@ -358,9 +358,86 @@ This is the installer's stated **working-memory requirement**; it is not the sam
 - The RTX 3080 also drives the Linux display. If a full model load causes a freeze or black screen (upstream issue #779), rerun setup with `--vram-reserve-mib 1500`. No such failure has yet been observed.
 - Installer cited an upstream community benchmark (issue #834) suggesting changing `"STRATA_RESIDENT_HEADROOM_GIB"` from default `4` to `6` on a 31 GB RAM system; it reportedly retained decoding speed while leaving 2 GiB more RAM available to the OS. **Not applied**; test as a separate variable later.
 - Calibration prompt: `Tune Strata for this PC now? ... (about 15-30 minutes; later: START-HERE --calibrate) [y]`.
-- Recommended accepting calibration now on ASUS AC power, with 64K context, 8-bit KV, no vision/projection, and all defaults initially preserved. **Operator selection and calibration result are still pending confirmation.**
+- Calibration was accepted and subsequently completed on ASUS AC power, with 64K context, 8-bit KV, no vision/projection. The measured results and resulting defaults are recorded below.
 
 **Measurement caution:** The calibration is a machine-specific result, not yet a comparative GPU benchmark. The faulty 960 EVO, the GPU's role driving the display, RAM pressure, and power modes are confounding factors; repeat calibration on the healthy drive before final performance conclusions.
+
+### 2026-10-13: First successful Strata calibration (Step 7 completed)
+
+**Milestone:** Model fully loaded, GPU expert cache filled, and the calibration suite completed. The resulting startup script is \`run-coder-iq1_m.sh\`. The installer declared **"All set."** and reported that default settings were already fastest in its test at **47.4 generated tokens/s**. These are *calibration-workload measurements on the failing Samsung 960 EVO*, not a formal benchmark report or proof of general-purpose response speed.
+
+**Engine startup observations:**
+
+~~~text
+[strata] starting the engine: reading the model's weights ...
+[strata] loading the experts the GPU does not hold into RAM
+[strata] filling the GPU's expert cache (4452 experts, 8.47 GiB of VRAM) ...
+[strata] almost ready ...
+[strata] still starting (32 s) - please wait ...
+~~~
+
+The engine was relaunched repeatedly for worker and expert-tier tests. Every shown launch progressed to throughput measurement. **4,452 GPU-resident expert slots using 8.47 GiB VRAM** is an observed cache allocation, not total VRAM usage. The startup log was still waiting at 32 seconds; an exact fully-ready duration and peak RAM/VRAM were not captured. No black-screen failure was reported. External monitor is connected by DisplayPort over USB-C, which should be treated as a dGPU-display/VRAM reservation variable in later comparisons.
+
+**PCIe share sweep, generated tokens/s; three rounds per setting:**
+
+| Share | Run 1 | Run 2 | Run 3 | Median |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.00 | 41.7 | 41.5 | 42.4 | 41.7 |
+| 0.15 | 43.8 | 41.9 | 42.9 | **42.9** |
+| 0.20 | 41.7 | 41.4 | 43.4 | 41.7 |
+| 0.35 | 37.0 | 37.1 | 37.2 | 37.1 |
+| 0.55 | 31.6 | 31.1 | 30.5 | 31.1 |
+| 0.75 | 27.1 | 26.6 | 27.5 | 27.1 |
+| 0.90 | 23.4 | 25.6 | 25.6 | 25.6 |
+| 1.00 | 22.2 | 22.2 | 21.8 | 22.2 |
+
+**PCIe share finding:** 0.15 had the best median within this sweep, 42.9 tok/s; share 1.0 fell to 22.2 tok/s (~48% lower). This is sensitivity to the **engine's configured computation/transfer strategy**, not direct evidence of measured PCIe bus saturation. Compare only within a particular tuning subtest because others were run under different settings/restarts.
+
+**Speculative-draft floor sweep, generated tokens/s:**
+
+| Draft floor | Run 1 | Run 2 | Run 3 | Median |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.3 | 42.5 | 42.1 | 41.7 | 42.1 |
+| 0.5 | 42.5 | 41.9 | 43.6 | 42.5 |
+| 0.7 | 43.6 | 43.5 | 41.7 | **43.5** |
+
+**CPU workers** (one output reported per configuration; engine restarted before each):
+
+| CPU workers | Generated tokens/s |
+| ---: | ---: |
+| 7 | **43.1** |
+| 5 | 41.0 |
+| 4 | 39.2 |
+| 2 | 34.6 |
+
+Seven CPU workers performed best of the four tested. Sample size and test type differ from the three-round sweeps, so this is a preliminary engine-specific configuration finding, not a general CPU scaling curve.
+
+**Expert-tier policy** (one result per policy; engine restarted):
+
+| Expert cache policy | Generated tokens/s |
+| --- | ---: |
+| Engine default | **47.4** |
+| Every 1, 80 swaps, decay 0.97 | 45.0 |
+| Every 1, 160 swaps, decay 0.97 | 45.2 |
+
+The expert-cache **default** outperformed the two more aggressive swapping policies under this workload. Reported **47.4 tok/s** is the highest value in the shown calibration output, but is not a complete benchmark of model accuracy, prompt processing, or interactive latency.
+
+**Startup and serving configuration announced:**
+
+~~~text
+[ok] tuned for this PC: the default settings are already the fastest here (47.4 tok/s)
+[ok] start script: run-coder-iq1_m.sh
+API (OpenAI):    http://127.0.0.1:8080/v1
+API (Anthropic): http://127.0.0.1:8080/v1/messages
+Next time: ./setup.sh (or run-coder-iq1_m.sh)
+Parallel requests: kept one at a time
+~~~
+
+The setup documented an estimated 10-25% per-request speed cost from parallel batching on this card, but we **have not measured batching locally**. Localhost endpoints are installer-provided interface addresses and do not by themselves prove an external client connection test.
+
+**Current stopping point:** Installer asks whether to run a roughly **10-minute quick benchmark** and write a shareable report (\`./bench.sh\` later); default answer \`[n]\`. Recommended answering **yes**, but **benchmark initiation/completion/report not yet confirmed**.
+
+**Follow-up:** Capture the generated benchmark output and report path; test correctness and latency through the HTTP API; record peak RAM, swap, total VRAM, CPU/GPU temperatures, clock/power, PCIe link under load, and monitor routing. Keep 960 results explicitly provisional and repeat comparisons on the healthy Samsung 970 EVO Plus. Do not change resident headroom, KV streaming, context, or display configuration before preserving this baseline.
 
 ## References
 
