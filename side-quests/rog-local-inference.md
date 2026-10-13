@@ -774,6 +774,20 @@ There is also a Samsung **953.9 GiB** NVMe at `nvme1n1`, including an unmounted 
 
 **Next read-only checks:** `lsblk -f`, `sudo blkid /dev/nvme1n1p3`, and disk SMART diagnostics to identify whether a healthy, adequately spacious model volume exists. Avoid writing to the possibly Windows-controlled partition until its ownership, encryption and available capacity are established. Keep installed Strata Coder baseline.
 
+### 2026-10-13: Coder retired; 179 GiB free for SSD-backed frontier test
+
+After the operator removed the Coder model directory and its prepared pack, Ubuntu disk usage was measured as:
+
+```text
+Filesystem        Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2    228G   37G  179G  18% /
+/home/rog/Strata-data        6.5G
+```
+
+Coder's ~55 GiB downloaded model and ~25 GiB pack were removed; the remaining `Strata-data` is the ~6.5 GiB shared MTP data. This frees adequate storage for a **111.3 GB decimal (~103.7 GiB)** Unsloth UD-Q4_K_XL download plus ~1.4 GB packed data, leaving roughly **74 GiB free** before incidental overhead. The separate Windows NVMe remains explicitly excluded from the experiment. RAM and GPU are unchanged.
+
+**Next phase, not yet verified as installed:** run `./setup.sh --setup --family unsloth --model UD-Q4_K_XL --context 8192 --vision no --yes --no-start` in the existing Strata checkout, then inspect its generated configuration and startup logs. Measure real disk reads, page-cache behavior, GPU cache residency, generation speed, and quality. Do not extrapolate the 64 GB reference system's speed to this 32 GB system.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
