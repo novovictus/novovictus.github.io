@@ -854,6 +854,36 @@ This demonstrates end-to-end load, prefill, reasoning/answering, and normal term
 
 **Follow-up:** Repeat same short request 2–3 times with unchanged settings to quantify warm-cache variance before tuning RAM. Then one-factor-at-a-time compare **8 GiB resident expert budget against 6 GiB** (and possibly 4 GiB). Smaller budgets may reduce swap pressure yet increase NVMe reads; the result cannot be predicted reliably from this one run. Continue monitoring the Samsung 960 EVO's previously reported SMART errors, and keep the separate Windows NVMe untouched. The detailed analysis was also saved in the conversation as `Strata_UD-Q4_K_XL_Benchmark_2026-10-13.md`; this log records its key measurements.
 
+### 2026-10-13: Repeat captured prompts, warm expert cache >10 tok/s
+
+The operator uploaded `20261013-144.zip`, containing the original 14:40 baseline plus **two repeated captures** made at 14:46 and 14:47 EDT. All **three** direct requests used the same 29-token SSD-versus-RAM prompt, 8 GiB RAM expert budget, context 8192, `temperature=0`, reasoning off, and `max_tokens=128`. All returned HTTP 200, exit 0 and normal `stop`. Each capture includes full request metrics, GPU, `vmstat`, `iostat`, and read-only before/after kernel counters.
+
+| Metric | 14:40 baseline | 14:46 repeat | 14:47 repeat |
+| --- | ---: | ---: | ---: |
+| Request total time | **16.093 s** | **4.616 s** | **3.705 s** |
+| Prompt tokens / reused | 29 / 0 | 29 / 22 | 29 / 22 |
+| Prompt prefill | 7.448 s | 0.600 s | 0.326 s |
+| Generated tokens | 45 | 47 | 36 |
+| Decode throughput | **5.2 tok/s** | **11.7 tok/s** | **10.7 tok/s** |
+| GPU expert hit rate | **51.0%** | **72.0%** | **79.7%** |
+| Additional PCIe expert share | 1.0% | 0.2% | 0.1% |
+| RAM-tier expert blobs | 2,789 | 2,276 | 1,308 |
+| File-tier expert blobs | 5,513 | 4,309 | 2,997 |
+| Logical file-tier reads | **15.144 GB** | **10.589 GB** | **7.701 GB** |
+| Physical Ubuntu NVMe reads | **9.976 GB** | **1.553 GB** | **1.843 GB** |
+| Physical NVMe writes | 324 MB | 3.3 MB | 0.4 MB |
+| Swap-in | 274.9 MiB | 3.1 MiB | 2.0 MiB |
+| Swap-out | 305.8 MiB | 0 MiB | ~0 MiB |
+| Systemwide major faults | 55,078 | 4,583 | 4,957 |
+| PSI I/O some/full | 1.512 / 0.910 s | 0.166 / 0.114 s | 0.165 / 0.115 s |
+| PSI memory some/full | 0.473 / 0.420 s | 0.008 / 0.007 s | 0.035 / 0.033 s |
+
+The physical block I/O and kernel counter changes cover the full capture interval (**22 seconds** for first run, **10 seconds** each for repeats), not just the precise request duration. The per-request `file_mb` is Strata's **logical** file-tier activity, not a physical SSD read counter. The second and third runs reused 22 cached prompt tokens, their output sizes differ, and adaptive expert cache occupancy changed, so the total-latency improvement cannot be assigned solely to SSD file-cache warming. Nevertheless, *decode* speeds increased by **2.06–2.25x**, with higher GPU hits and lower file-tier demand.
+
+**Key experimental outcome:** At 8 GiB resident budget the ROG demonstrated a beneficial warm-cache regime: **10.7–11.7 tokens/s decode**, roughly **80% less physical NVMe reads** per captured window, and almost no active swap after warmup despite ~3.9 GiB still allocated in swap. The first-run swap and stalls are not representative of its warmed state. Physical reads between runs 2 and 3 are nonmonotonic, as expected when output lengths, routing, OS page cache and capture windows vary. Model GPU VRAM use remained ~15,681 MiB and temperatures were 45–51 C.
+
+**Next recommended experiment:** preserve 8 GiB settings, compare several **new topic prompts** to test cold route selection and avoid attributing 22-token prompt reuse to expert paging. Record `cached_tokens`, `file_mb`, system NVMe reads and generation throughput. After that, test alternative 6 GiB resident expert budget with controlled startup/warmup. The Windows NVMe remains excluded; the Ubuntu Samsung 960 EVO's historical SMART media errors warrant periodic checking, especially before prolonged SSD stress. Detailed companion report: `Strata_UD-Q4_K_XL_Three_Run_Comparison_2026-10-13.md`, generated from the supplied capture.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
