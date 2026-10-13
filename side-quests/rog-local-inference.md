@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Strata Coder baseline complete; next candidate is full Qwen3.8-Flash-Next IQ2_XS in Strata, pending RAM feasibility (2026-10-13)  
+**Status:** Strata Coder baseline complete; next phase stresses native 32 GB RAM / 16 GB VRAM with SSD-backed expert paging in full frontier-scale Qwen3.8 models; no RAM upgrade planned (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -727,6 +727,42 @@ The source specifies low-RAM **resident** mode on a 32-GB system with 12–16-GB
 **Recommended next option:** evaluate a **2×32-GB DDR4 SODIMM (64 GB) memory upgrade**, verify platform compatibility and available storage, then add **full Qwen3.8-Flash-Next IQ2_XS** through existing Strata's `./setup.sh --setup`. Keep the Coder install untouched as a baseline. The 48-GB minimum fits but 64 GB gives better memory headroom and dual-channel symmetry. Neither RAM upgrade nor install has been approved or performed.
 
 The earlier full-model speed/quality figures come from upstream test machines and must **not** be reported as measured results for the ROG.
+
+### 2026-10-13: Recenter experimental goal on maximum model size with fixed RAM and SSD expert paging
+
+**User correction of experimental intent:** The purpose is **not** to pick a model that operates comfortably in available RAM or to recommend upgrades. It is to **stress and characterize a frontier-scale mixture-of-experts model across GPU VRAM, the fixed 32 GB system RAM, Linux file-backed page cache, and SSD-backed expert reads**. Slower inference and page-cache churn are measurements. The previous recommendation to defer a full model until acquiring 64 GB of DDR4 is explicitly **withdrawn**. Hardware stays fixed at 32 GB RAM, RTX 3080 Laptop GPU 16 GB VRAM, PCIe Gen3 x8, Ryzen 9 5900HX; retain **Strata**.
+
+**Documented Strata candidates / upper bounds, sizes from upstream rather than local tests:**
+
+| Model | Approximate GGUF model size | Approximate routed experts | Mode of operation in a 32 GB RAM system |
+| --- | ---: | ---: | --- |
+| Current Coder IQ1_M | 58.4 GB | 23.4 GB | Measured ~42 tok/s; resident low-RAM expert tier |
+| Full Q2_0 | 66–76 GB among original sizes | ~34 GB | Low-RAM mmap expert tier with storage misses |
+| Full IQ2_XS | 66–76 GB among original sizes | ~35.5 GB | Low-RAM mmap expert tier with storage misses |
+| Full IQ3_XXS | 66–76 GB among original sizes | ~43 GB | Low-RAM mmap expert tier with storage misses |
+| Full IQ3_S | 66–76 GB among original sizes | ~50 GB | Low-RAM mmap expert tier with storage misses |
+| Unsloth UD-IQ4_XS | **93.7 GB** | **59.5 GB** | GGUF-in-place expert reads; tiny RAM-resident budget |
+| **Unsloth UD-Q4_K_XL** | **111.3 GB** | **~77 GB** | GGUF-in-place expert reads; forced 32 GB installation via `--yes`; largest model in supported installer menu |
+| Unsloth UD-Q6_K_XL | **169.2 GB** | **~110 GB** | **Stretch only**: manual pack, specialized Q6 kernels and Q8 PLE; not in installer menu, not validated on this hardware |
+
+References: [Strata MODELS.md](https://github.com/Niko1221/Strata/blob/main/docs/MODELS.md), [UD-Q4_K_XL manual](https://github.com/Niko1221/Strata/blob/main/docs/UNSLOTH_Q4.md), [UD-Q6_K_XL experimental manual](https://github.com/Niko1221/Strata/blob/main/docs/UNSLOTH_Q6.md), and [setup.py](https://github.com/Niko1221/Strata/blob/main/setup.py).
+
+**Upper-limit interpretation:** The largest normally setup-selectable model is **111.3 GB UD-Q4_K_XL**. Its nominal 48 GB system-RAM threshold is a warning that the installer explicitly permits overriding when the model is named and `--yes` is used. This does **not guarantee loading/successful inference** at 32 GB. The experimental 169 GB UD-Q6_K_XL has run on a **499 GB** workstation and has additional build/runtime prerequisites; claiming it will run on 32 GB without testing would be speculative.
+
+A practical *single install attempt*, only after verifying a healthy and sufficiently spacious NVMe mount:
+
+~~~bash
+cd ~/Strata
+./setup.sh --setup --family unsloth --model UD-Q4_K_XL --context 8192 --vision no --yes --no-start
+~~~
+
+The ~**8 GiB default RAM expert budget** derives from Strata's rule *total RAM minus 24 GB* for this family; it holds popular experts while others are read from GGUF on the SSD. Strata does **not** create a second `experts.bin` for this family; the model shards are ~111.3 GB, plus ~1.4 GB dense pack and draft weights when needed. Start at **8K** context to maximize headroom, then increase independently. Its **7–8.5 tok/s** upstream number belongs to a machine with **64 GB system RAM, 12 GB GPU**, and a **40 GiB** RAM expert budget, and **must not** be projected onto the ROG.
+
+**Required guards:** The Ubuntu Samsung 960 EVO 250 GB SSD had **9,377 SMART media/data integrity errors** in prior inventory; storage failures would confound the benchmark. Prefer a **healthy already-owned drive** with verified free capacity, and inspect `lsblk -o NAME,MODEL,SIZE,MOUNTPOINTS` plus `df -h ~/Strata-data` before committing 111+ GB of downloads. Existing 500 GB Samsung 970 EVO Plus is a possible already-owned substitute if connected and verified. Do not modify the Windows/BitLocker disk or expend on new RAM. Treat the SSD as the expert backing store, distinguished from anonymous Linux swap.
+
+**Measurement plan:** Keep one setup and seed prompt per configuration; record model cold-start elapsed time, completed vs failed startup, total/resident CPU memory and memory pressure (vmstat, free, /proc/pressure/{memory,io}), NVIDIA VRAM, GPU expert cache slots/hit rate, NVMe reads per second and total GB read (iostat), TTFT, prompt tokens/s, output tokens/s, total generation, and quality. Step from 8K context upwards after achieving a successful short answer; compare cold-cache vs warm-cache and optional resident RAM budget (e.g. 4/8/12 GiB where available), without confusing OS page caching with Linux swap. Preserve Coder baseline unmodified.
+
+**No installation or memory/disk hardware change was performed by the assistant.** The user has not yet chosen a model to install or provided a free-space check.
 
 ## References
 
