@@ -999,6 +999,16 @@ The operator uploaded `20261013-171.zip` containing **seven synchronized capture
 
 **Capture analysis artifacts (conversation attachment, not GitHub):** `Strata_IQ2_XS_Seven_Run_Benchmark_2026-10-13.md` and `.csv` include exact per-run counters and caveats. No model settings or other repository files were changed in this logging step.
 
+### 2026-10-13: IQ2_XS negative control, expected navigation verified
+
+The operator repeated the prior Training Engine negative-control review against the installed IQ2_XS model with the supplied app.js source. The first attempt was rejected because the 10,430-token prompt exceeded the 8,192-token configured context. A subsequent attempt completed normally:
+
+    [strata] done: 1177 tokens in 81 s (48.4 tok/s) (stop, cancel=False), expert cache 88.4% hit
+
+The model correctly classified the navigation as EXPECTED BEHAVIOR, based on the explicit Review button label on the final question and the move(1) branch sending an answered, unflagged run to index zero while opening the navigator. The current Training Engine app.js, lines 380 and 392-399, independently confirms both mechanisms. Unlike Coder IQ1_M and the full Unsloth UD-Q4_K_XL, IQ2_XS did not produce a false-positive bug report or invented behavior in this negative control. No Training Engine modification was made.
+
+Prior Coder IQ1_M: 1470 tokens, 34 s, 44.2 tok/s, expert hit 84.8%, wrong classification. Full Unsloth UD-Q4_K_XL: 1935 tokens, 440 s, 5.3 tok/s, expert hit 66.2%, wrong classification. IQ2_XS: 1177 tokens, 81 s, 48.4 tok/s, expert hit 88.4%, correct classification. Although decode is fast, browser wall time remains 81 s and prefill time was not separately captured. The result is one successful quality control, not evidence of broad correctness. Next: positive control using app.js and page.js in a fresh isolated chat.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
