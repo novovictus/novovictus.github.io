@@ -975,6 +975,30 @@ After deleting Unsloth UD-Q4_K_XL and restoring the Ubuntu filesystem to **179 G
 
 **Next step:** Start with `cd ~/Strata && ./run-iq2_xs.sh`, check successful initialization and GPU cache allocation, then run a short controlled capture followed by longer coding/analysis tests with a clean browser conversation and source-grounded scoring. Do not mistake the generic PCIe x8 “check slot” warning for an actionable GPU-seating instruction on the integrated laptop platform. No changes to RAM, GPU, Windows SSD or runtime authorized by this installation.
 
+### 2026-10-13: IQ2_XS seven-run short-prompt benchmark (cache warming)
+
+The operator uploaded `20261013-171.zip` containing **seven synchronized captures** made at 17:12-17:14 EDT after successful installation and startup of the original Qwen3.8-Flash-Next GSQ-RCO **IQ2_XS** model under **Strata 0.1.43.1**, 8,192 context, MTP on, `--mmap-experts`. All seven requests used the same 29-token SSD-versus-RAM question, with success HTTP 200, curl exit 0 and normal `stop`. Strata engine reported **7,513 GPU expert slots / 10,305 MiB expert cache** (vs. 2,799 slots / ~8.16 GiB GPU expert cache in the previous full Unsloth test). Ubuntu mounted root `/dev/nvme0n1p2` was 228 GiB total / **135 GiB used, 81 GiB available** at the time of these captures; no Windows SSD touched.
+
+| IQ2_XS repeat | curl total (s) | prompt read / total | output tokens | prefill (s) | decode (tok/s) | GPU expert hit | logical Strata file-tier (GB) | Ubuntu physical NVMe read (GB) |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 5.273 | 29/29 | 47 | 2.893 | **19.8** | 83.3% | 5.529 | 4.056 |
+| 2 | 0.985 | 7/29 | 47 | 0.078 | **52.0** | 94.0% | 2.943 | 0.108 |
+| 3 | 0.964 | 7/29 | 50 | 0.067 | **55.9** | 96.9% | 1.624 | 0.157 |
+| 4 | 0.794 | 7/29 | 50 | 0.068 | **69.0** | 97.9% | 1.070 | 0.035 |
+| 5 | 0.792 | 7/29 | 50 | 0.066 | **69.0** | 98.1% | 0.979 | 0.039 |
+| 6 | 0.737 | 7/29 | 50 | 0.065 | **74.7** | 98.2% | 0.817 | 0.015 |
+| 7 | 0.736 | 7/29 | 50 | 0.064 | **74.7** | 98.2% | 0.809 | 0.012 |
+
+**Filesystem / memory observations:** `/proc/diskstats` device-wide physical NVMe read deltas were 4.056 GB, 0.108 GB, 0.157 GB, 0.035 GB, 0.039 GB, 0.015 GB, 0.012 GB across the seven respective ~6-11 s capture windows. Major page faults were 27,036, 417, 985, 267, 129, 66, 178. Swap-out pages were **zero in every capture**; swap-in pages were negligible (~1.15 MiB for the first capture, <0.5 MiB in each subsequent capture) despite ~1.9 GiB remaining allocated to swap. `free -h` reported ~23 GiB `MemAvailable` dominated by reclaimable page cache. GPU VRAM used ~15,505–15,587 MiB, no evidence of thermal throttling in these samples. Initial request `iostat` recorded roughly 0.6–0.9 GB/s physical Ubuntu NVMe reads in its busiest intervals.
+
+**Direct comparison with UD-Q4_K_XL using the identical short prompt:** full-model cold first curl 16.093 s and 5.2 tok/s with 51.0% GPU expert hit; IQ2_XS cold first 5.273 s / 19.8 tok/s / 83.3%. Full-model third repetition 3.705 s / 10.7 tok/s / 79.7% vs. IQ2_XS seventh repetition 0.736 s / 74.7 tok/s / 98.2%. Earlier full-model warm outputs comprised 36 tokens vs. IQ2_XS 50, so compare per-token decode first. The shorter model demonstrates a **~7x improvement in warm short-prompt decode**, not yet an established 7x improvement for arbitrary coding or novel tasks.
+
+**Interpretation:** This is convincing evidence of a powerful cache-warming response for **identical repeated input**, not a generalizable new-prompt throughput measurement. From request 2, Strata's conversation/prompt cache reused 22/29 input tokens; therefore most reduction in prefill time is expected. Even output decode accelerated sharply as the routed GPU expert hit rate increased from 83.3% to 98.2%. Strata `file_mb` is **logical mapped-file expert access**, which may be served by Linux's file cache: do not treat 0.81 GB as 0.81 GB physical NVMe reads. Systemwide disk measurements also cover idle intervals and background I/O. The model retains just ~31% of experts in GPU memory globally per setup's approximation; repeating one prompt can achieve 98.2% hits on the *specific routed hot set* without making the full model RAM-resident.
+
+**Operational assessment:** The model has passed the *warm short-answer latency* benchmark (0.74 s after warming), substantially outperforming the retired UD-Q4_K_XL, on unchanged hardware. Not yet demonstrated: unique prompts requiring many different experts, multi-file source-analysis workloads, accuracy, or end-to-end multi-minute reasoning. Continue **without RAM upgrade or changing hardware/runtime**. Next test several fresh unrelated prompts, then earlier review-navigation negative control and configured-count positive control, each in isolated conversations using source-grounded files. Use the same system monitoring during a long prompt. SSD SMART/media error history remains a reason to minimize unnecessary stress and not touch the Windows SSD.
+
+**Capture analysis artifacts (conversation attachment, not GitHub):** `Strata_IQ2_XS_Seven_Run_Benchmark_2026-10-13.md` and `.csv` include exact per-run counters and caveats. No model settings or other repository files were changed in this logging step.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
