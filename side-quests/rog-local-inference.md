@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Speed baseline established; third code-analysis generation reached answer phase and ended normally; response content unverified (2026-10-13)  
+**Status:** Speed baseline established; first completed real code review was delivered but showed repeated self-corrections, false-positive bug claims and incomplete fixes (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -618,6 +618,31 @@ Latest console output:
 **Interpretation:** The new terminal telemetry is positive: Strata entered the `answering` phase and reached a normal stop, rather than exhaust the cap inside a thinking segment. Generation stopped 40 tokens below its 4,096-token ceiling. This **supports the reasoning-budget mitigation**, but does **not independently prove** the exact budget applied because no startup `thinking budget` log line or thinking-to-answer transition counter was included. Whether the actual resulting prose was complete, coherent, accurate, or saved remains unverified. The 4,096 cap still appears to come from the chat request/browser setting. No change in hardware/precision is justified by these results alone.
 
 **Next:** Preserve the full browser response, verify `reasoning_budget_tokens` was loaded at startup, record elapsed time and separate thinking/answer tokens, then independently validate source-referenced findings in the Training Engine. Avoid confusing terminal stop success with code-review quality.
+
+### 2026-10-13: First recovered code-review answer, analysis-quality failure
+
+The operator provided the actual 230-line response from the previously recorded **4,056-token, 115-second** code-review run (Strata ended in `answering` with `stop`). Prompt asked for the **three highest-confidence functional bugs** in the seven-file Training Engine. The answer contains a discernible analytical loop: propose a possible bug, examine its own argument, retract it, then propose another. This is **not** a byte-identical repeated-token loop or a crash, and does not establish quantization as its cause.
+
+**Self-corrections documented in the output:**
+
+- Proposed an `expiresAt` timestamp sanitization defect, then admitted the scenario was not reproducible.
+- Proposed a double-submit race between `updateTimer()` and `submit()`, then correctly concluded `clearInterval(ticker)` was sufficient.
+- Proposed that unawaited `updateBuildNote()` was a functional bug, then classified it as a cosmetic loading detail.
+- Proposed that the `renderResults` wrapper broke `currentResult`, then traced its call chain and retracted the claim.
+- Proposed stale confidence `onchange` closure after navigation, then recognized `currentResponse()` deliberately reads the new current item.
+- Proceeded to force a third bug candidate rather than report that fewer than three were established.
+
+**Independent audit against the supplied 2026-10-13 Training Engine files:**
+
+| Claimed defect | Evaluation | Evidence and nuance |
+| --- | --- | --- |
+| #1: Practice-mode locking leaves confidence and notes editable, allegedly corrupting reveal state | **Unproven / likely product-policy choice** | `app.js` `renderQuestion()` deliberately disables only answer radio inputs when the practice answer is locked; note and confidence handlers remain bound via `bind()`. Neither modifies `response.answer` or the canonical `question.answer`; `renderAnswerReveal()` recomputes correctness on render. The ability to revise a personal note or confidence later is not proof of data corruption. One proposed fix mistakenly wrote `response.answer=e.target.value` when discussing confidence, which would introduce a defect. If confidence is to be frozen at reveal as a measurement policy, specify that as a requirement, not an established bug. |
+| #2: Exam-mode `move()` sends a fully answered, unflagged run back to index 0 | **False positive as characterized** | `app.js` `renderQuestion()` changes the final exam-mode Next button's label to **Review**. `move()` intentionally prioritizes unanswered questions, then flagged questions, otherwise the first question. This is an explicit review-navigation behavior, not an accidental unexplained jump. |
+| #3: Completed result's `configuredQuestionCount` reads mutable `state.settings.questionCount` | **Valid metadata-integrity concern** | `app.js` `startNew()` selects `active.items`, but `submit()` reads the globally current `state.settings.questionCount` instead of a run-start snapshot; `page.js` `saveCustomize` can update settings while an active attempt exists, and `restartActiveInMode()` retains the same items even after settings change. This can report a configured count inconsistent with the run's originally selected question set. The model's `active.items.length` patch is incomplete because *requested/configured* count can exceed *selected/presented* count when mastered questions are excluded. Any proper patch must snapshot original settings at run creation, preserve them on mode restart, and restore them in `sanitizeActiveAttempt()` so resume/import does not discard the new field. |
+
+**Overall:** Of three confident claims, **one source-grounded metadata defect**, **one false positive against deliberate review UX**, and **one unsubstantiated locking-policy criticism**; the suggested fixes include one direct field-assignment error and one incomplete data-lifecycle change. No bug fixes applied. The run demonstrates eventual answer generation after the thinking-budget mitigation but **fails the requested high-confidence engineering review standard**. It cannot be counted as successful source-based reasoning merely because the engine returned `stop`.
+
+**Next controlled tests:** Ask for a single verifiable execution path, e.g. `"Trace how configuredQuestionCount is recorded when a run starts, settings change while it remains active, and it is submitted. Quote the exact functions, and distinguish configured vs presented counts."` Or ask the model to **verify** one candidate bug at a time, explicitly allowing `"no bug"` as an answer. Score source accuracy, self-contradictions, patch correctness and time-to-first-useful-answer in addition to tokens/sec. Keep model/hardware configuration constant until baseline quality is characterized.
 
 ## References
 
