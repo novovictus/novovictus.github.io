@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Experimental Linux installation complete; Strata Coder model download underway as of 2026-10-13  
+**Status:** Strata Coder GGUF download and expert packing complete; MTP q2_0 packing underway (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -226,7 +226,7 @@ Boot0004: Windows Boot Manager on Windows EFI partition
 Boot0001: additional Windows Boot Manager entry
 ~~~
 
-\`df -h /\` showed 228 GiB filesystem size, 19 GiB used, **197 GiB free (9% used)**. Linux mounts and loads from the 960 EVO, and the Windows partitions were not mounted. Windows restart/boot test remains outstanding.
+`df -h /` showed 228 GiB filesystem size, 19 GiB used, **197 GiB free (9% used)**. Linux mounts and loads from the 960 EVO, and the Windows partitions were not mounted. Windows restart/boot test remains outstanding.
 
 **Collection commands used:**
 
@@ -246,11 +246,11 @@ sudo smartctl -a /dev/nvme0n1
 
 **SSD diagnostics after installation.** Direct Linux SMART showed 9,377 media/data integrity errors, identical to the Windows count. Error-log entries grew from 11,117 to 11,181 (+64). The newest entries were primarily "Invalid Field in Command", "Feature Identifier Not Saveable", and "Invalid Log Page", so that increment cannot simply be equated to new NAND failures. Available spare remained 99%; endurance-used stayed at 1%; the reported temperature was 31 C (second sensor 42 C); host writes grew from ~4.46 to ~4.48 TB.
 
-Kernel output repeated \`nvme nvme0: 7/0/0 default/read/poll queues\` around 09:15, 09:51, 10:07, 10:38 and 10:43. Expanded context showed those lines during **suspend/resume** sequences, not during demonstrated NVMe read faults. ACPI/NVIDIA notifier warnings were also observed during resumes. No new ext4 I/O failures were shown in the examined excerpts. This does not rehabilitate the damaged SSD; it simply describes what was and was not observed.
+Kernel output repeated `nvme nvme0: 7/0/0 default/read/poll queues` around 09:15, 09:51, 10:07, 10:38 and 10:43. Expanded context showed those lines during **suspend/resume** sequences, not during demonstrated NVMe read faults. ACPI/NVIDIA notifier warnings were also observed during resumes. No new ext4 I/O failures were shown in the examined excerpts. This does not rehabilitate the damaged SSD; it simply describes what was and was not observed.
 
 ### 2026-10-13: Strata setup and model download
 
-Installed \`git\` and cloned [Niko1221/Strata](https://github.com/Niko1221/Strata), then ran:
+Installed `git` and cloned [Niko1221/Strata](https://github.com/Niko1221/Strata), then ran:
 
 ~~~bash
 sudo apt update
@@ -269,7 +269,7 @@ The laptop was initially powered through USB-C PD; the original ASUS AC adapter 
 | Setting | Value | Notes |
 | --- | --- | --- |
 | Model family | Qwen3.8-Flash-Next **Coder** (menu 3) | Reduced expert subset; not directly equivalent to full model |
-| Quantization | Coder \`IQ1_M\` | Installer: ~58 GB download; ~23 GB RAM requirement |
+| Quantization | Coder `IQ1_M` | Installer: ~58 GB download; ~23 GB RAM requirement |
 | Memory placement | Low-RAM mode | Installer estimated ~47% of experts on the GPU |
 | Context limit | 64K | Recommended for detected 16 GB GPU |
 | KV cache | 8-bit | Baseline matching Strata-published comparison format |
@@ -277,9 +277,9 @@ The laptop was initially powered through USB-C PD; the original ASUS AC adapter 
 | Experimental speed/refusal-direction projection | Off | Keep normal model behavior for baseline |
 | Power for future measurements | ASUS barrel adapter | Avoid USB-C power-limit confound |
 
-**Build issue:** Strata v0.1.43.1's prebuilt inference engine URL returned HTTP 404; the "latest" binary fallback also returned 404. The installer therefore proposed a **local build**, requiring CUDA Toolkit 13.0 and build dependencies (~8-10 GB estimated). Operator accepted. The next prompt (model download) appeared in **under five minutes**; exact build logs, \`nvcc\` version, and binary hash have not yet been recorded. The installer reported a llama.cpp source checkout at **\`3cf0325\`**.
+**Build issue:** Strata v0.1.43.1's prebuilt inference engine URL returned HTTP 404; the "latest" binary fallback also returned 404. The installer therefore proposed a **local build**, requiring CUDA Toolkit 13.0 and build dependencies (~8-10 GB estimated). Operator accepted. The next prompt (model download) appeared in **under five minutes**; exact build logs, `nvcc` version, and binary hash have not yet been recorded. The installer reported a llama.cpp source checkout at **`3cf0325`**.
 
-**Current stopping point (Step 5):** Downloading model files under:
+**Step 5 (completed):** Two Coder IQ1_M model shards downloaded under:
 
 ~~~text
 /home/rog/Strata-data/models/coder-IQ1_M/
@@ -287,9 +287,56 @@ The laptop was initially powered through USB-C PD; the original ASUS AC adapter 
   Qwen3.8-Flash-Next-GSQ-RCO-IQ1_M-00002-of-00002.gguf
 ~~~
 
-**Download completion, successful model load, inference correctness, GPU runtime allocation, token throughput, and thermal/PCIe measurements remain unverified.**
+**GGUF shard retrieval and model preparation succeeded** based on the subsequent Step 6 output. End-to-end model validation and successful text generation remain unverified.
 
 **Next steps:** Let model files finish downloading; check for download and storage errors; start a text generation smoke test; record peak VRAM/RAM/SSD metrics; run Strata's built-in benchmark on the 960 EVO for exploratory results; later reproduce on 970 EVO Plus before treating results as reliable. Benchmark 4-bit only with a supported configuration and document RAM prerequisites.
+
+
+### 2026-10-13: Model preparation, expert packing, and MTP (Step 6)
+
+**Observed successful commands** (executed by setup through the Strata Python venv):
+
+~~~bash
+/home/rog/Strata/.venv/bin/python /home/rog/Strata/tools/iq_pack.py \
+  --gguf /home/rog/Strata-data/models/coder-IQ1_M/Qwen3.8-Flash-Next-GSQ-RCO-IQ1_M-00001-of-00002.gguf \
+  --out /home/rog/Strata-data/packs/coder-iq1_m
+/home/rog/Strata/.venv/bin/python /home/rog/Strata/tools/iq_pack.py \
+  --gguf /home/rog/Strata-data/models/coder-IQ1_M/Qwen3.8-Flash-Next-GSQ-RCO-IQ1_M-00001-of-00002.gguf \
+  --out /home/rog/Strata-data/packs/coder-iq1_m --experts-bin
+~~~
+
+Both input shards were discovered. The initial indexing report listed **1,079 tensors**, **302 served natively**, **0 in extra.bin**, and an **arena of 1.37 GiB**. Tokenizer report: vocab 248,320; merges 247,587; pre-tokenizer `qwen35`; EOS ID 248046 and padding/BOS ID 248044.
+
+The low-RAM packing run concatenated experts from **48 layers** into:
+
+~~~text
+/home/rog/Strata-data/packs/coder-iq1_m/experts.bin
+experts.bin: 48 layers, 23.42 GiB
+[ok] model prepared: /home/rog/Strata-data/packs/coder-iq1_m
+~~~
+
+Mixed expert tensor encodings were observed across sampled layers: `IQ3_XXS/IQ4_NL` (0), `IQ2_S/Q2_0` (8), `IQ3_XXS/IQ4_NL` (16), `IQ2_S/IQ4_NL` (24, 32), and `IQ3_S/IQ4_NL` (40). Layer output offsets reached 19.04 GiB at layer 40. These are model packing facts, **not measurements of loaded VRAM residency or runtime quantization quality**.
+
+**MTP speculative-decoding dependency:** The setup fetched only the MTP block from the source model's BF16 checkpoint:
+
+~~~bash
+/home/rog/Strata/.venv/bin/python /home/rog/Strata/tools/mtp_fetch.py \
+  fetch --out /home/rog/Strata-data/mtp
+~~~
+
+It reported **31 BF16 tensors**, **5.214 GB across 28 checkpoint shards**. All listed tensor downloads reached 100%, including the large `mtp.layers.0.mlp.experts.down_proj` (1,677.7 MB) and `mtp.layers.0.mlp.experts.gate_up_proj` (3,355.4 MB).
+
+**Observed next command, still running at last report:**
+
+~~~bash
+/home/rog/Strata/.venv/bin/python /home/rog/Strata/tools/mtp_pack.py \
+  --src /home/rog/Strata-data/mtp --experts q2_0 \
+  --out /home/rog/Strata-data/mtp/mtp-q2_0.gguf
+~~~
+
+The final visible line was `mtp.layers.0.mlp.experts.down_proj: q2_0 235.9 MB`. There was no error in the supplied output. **Do not mark MTP packing, model startup, GPU execution, or any benchmark complete until subsequent logs confirm them.**
+
+**Engineering interpretation:** Strata's low-RAM preprocessing created a 23.42 GiB expert file separate from the source GGUF weights. This is not evidence that SSD page-in throughput dominates decoding, nor is the arena size a measured VRAM allocation. On the suspect 960 EVO, successful file creation does not establish data durability.
 
 
 ## References
