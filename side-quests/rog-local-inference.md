@@ -884,6 +884,27 @@ The physical block I/O and kernel counter changes cover the full capture interva
 
 **Next recommended experiment:** preserve 8 GiB settings, compare several **new topic prompts** to test cold route selection and avoid attributing 22-token prompt reuse to expert paging. Record `cached_tokens`, `file_mb`, system NVMe reads and generation throughput. After that, test alternative 6 GiB resident expert budget with controlled startup/warmup. The Windows NVMe remains excluded; the Ubuntu Samsung 960 EVO's historical SMART media errors warrant periodic checking, especially before prolonged SSD stress. Detailed companion report: `Strata_UD-Q4_K_XL_Three_Run_Comparison_2026-10-13.md`, generated from the supplied capture.
 
+### 2026-10-13: Full UD-Q4_K_XL negative control, repeat false-positive with invented code paths
+
+The operator repeated the **exam review-navigation negative control** against the full Unsloth UD-Q4_K_XL model under Strata, having previously tested the same question on Coder IQ1_M. Model generation log:
+
+~~~text
+[strata] done: 1935 tokens in 440 s (5.3 tok/s) (stop, cancel=False), expert cache 66.2% hit (+0.4% of the routed experts over PCIe)
+~~~
+
+This confirms completed inference, not high-quality analysis. Strata's throughput figure is the approximate **decode rate**, not 1,935 / 440 = 4.40 tokens/sec for the entire request. The full model took **440 s total**, compared to the prior Coder IQ1_M negative-control run **34 s total** at **44.2 tok/s** and **84.8% expert-cache hit**, though token counts differed (full **1,935**, Coder **1,470**) and cached prompt/context conditions have not been proven identical. The new run is approximately **8.3x slower** in reported decode rate and **12.9x longer** in total elapsed time. No synchronized nvme/vmstat capture was supplied for the full-model coding response, so do not infer file-tier byte count from this log.
+
+**Full-model verdict:** `CONFIRMED BUG` because the final question `move(1)` branch searches for first unanswered/flagged and falls back to index 0. That mechanism **does exist**, and the model correctly detects the index-0 outcome. However, it claims (a) final button says Review if unfinished but Submit if all complete, (b) flag toggling never calls `renderQuestion()`, (c) `ArrowRight` maps to `move(1)`, (d) the code uses `previousIndex` and `isExamMode()` helpers. **These claims contradict the current repository's `practice-test/app.js`:**
+
+- Line **380**: final exam-mode button **always** reads `Review`, independent of answer/flag state.
+- Lines **392-399**: if the last question is active, `move(1)` deliberately searches the unanswered set then flagged set and finally falls back to index 0, **explicitly opens** the navigator, and rerenders the question.
+- Line **403**: `toggleFlag()` calls `renderQuestion()`.
+- Line **232**: the next-button click invokes `move(1)`; `app.js` has **no** `ArrowRight` or `keydown` handler for this feature and **no** `previousIndex` or `isExamMode()` helper.
+
+**Assessment:** **Negative control failed again (overconfident false positive / unsupported rationale).** The navigation is an observable wraparound to review from the last question, with the button visibly labeled Review and navigator opened; it is not established as an implementation bug without a contrary product requirement. The model identified a real branch but hallucinated surrounding UI behavior and a keyboard reproduction. This repeats the Coder's inability to discriminate expected review behavior from defects. No Training Engine changes are justified on this result. The exact submitted prompt/file content and chat-history isolation for the new run were not captured; comparison relies on latest public `training-engine/main` source and the operator's stated reuse of earlier tests.
+
+**Next test:** Run the previously defined positive-control `configuredQuestionCount` scenario with a fresh, isolated conversation and exact `app.js` + `page.js` sources. Score source fidelity, valid reproduction steps and mitigation separately from runtime. If measuring sustained storage pressure, use `capture-strata-test.sh` adapted to the actual coding request and take system samples simultaneously.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
