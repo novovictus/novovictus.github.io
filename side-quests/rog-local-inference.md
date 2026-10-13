@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Speed baseline established; two code-analysis attempts exhausted generation limits without producing an answer (2026-10-13)  
+**Status:** Speed baseline established; third code-analysis generation reached answer phase and ended normally; response content unverified (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -592,6 +592,32 @@ Valid ending for the observed `strata-coder-iq1_m.json` file:
 ~~~
 
 **Preventative check**: after any manual edit, run `python3 -m json.tool ~/Strata/strata-coder-iq1_m.json >/dev/null && echo "JSON valid"` before restarting. Preserve existing settings and bracket/commas. The separate default `max_tokens` setting is supported in Strata's `strata-coder-iq1_m.shared-settings.json`; it is **not a supported top-level model-JSON output default**. No subsequent successful code-review inference was reported.
+
+### 2026-10-13: First normally terminated code-analysis generation
+
+Following an unsuccessful 39,968-token reasoning run and another 4,096-token run that both ended inside thinking with no response, the operator corrected a missing comma in the model JSON, then successfully started Strata with intended top-level `reasoning_budget_tokens: 1024` and `reasoning_effort: low`. The operator had **not** configured a separate persistent default `max_tokens` in the shared-settings JSON. An unspecified browser save action was missed; the browser's final answer text has **not** been supplied for inspection.
+
+Latest console output:
+
+~~~text
+[strata] answering: 4015 of max 4096 tokens, 42.0 tok/s, 114 s
+[strata] done: 4056 tokens in 115 s (42.1 tok/s) (stop, cancel=False), expert cache 85.5% hit (+0.2% of the routed experts over PCIe)
+~~~
+
+| Metric | Prior long run | Prior short run | Current run |
+| --- | ---: | ---: | ---: |
+| Generated tokens | 39,968 | 4,096 | **4,056** |
+| Total output ceiling | 39,968 | 4,096 | **4,096** |
+| Elapsed time | 966 s | 122 s | **115 s** |
+| Generation rate | 42.2 tok/s | 39.5 tok/s | **42.1 tok/s** |
+| Stop reason | `length` | `length` | **`stop`** |
+| Phase at termination | Thinking | Thinking | **Answering** |
+| Expert cache hit | 90.0% | 88.6% | **85.5%** |
+| Answer content provided for review | No | No | **No** |
+
+**Interpretation:** The new terminal telemetry is positive: Strata entered the `answering` phase and reached a normal stop, rather than exhaust the cap inside a thinking segment. Generation stopped 40 tokens below its 4,096-token ceiling. This **supports the reasoning-budget mitigation**, but does **not independently prove** the exact budget applied because no startup `thinking budget` log line or thinking-to-answer transition counter was included. Whether the actual resulting prose was complete, coherent, accurate, or saved remains unverified. The 4,096 cap still appears to come from the chat request/browser setting. No change in hardware/precision is justified by these results alone.
+
+**Next:** Preserve the full browser response, verify `reasoning_budget_tokens` was loaded at startup, record elapsed time and separate thinking/answer tokens, then independently validate source-referenced findings in the Training Engine. Avoid confusing terminal stop success with code-review quality.
 
 ## References
 
