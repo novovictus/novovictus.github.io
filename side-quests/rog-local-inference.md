@@ -959,6 +959,22 @@ The figures match the **pre-installation state after Coder retirement**: 179 GiB
 
 No replacement model, RAM upgrade, storage reconfiguration, or new runtime is authorized or implied by closing this phase. The measurement record stays available for future comparison.
 
+### 2026-10-13: IQ2_XS installed for next low-RAM experiment
+
+After deleting Unsloth UD-Q4_K_XL and restoring the Ubuntu filesystem to **179 GiB free**, the operator successfully installed the **original full-expert Qwen3.8-Flash-Next GSQ-RCO IQ2_XS** variant in the existing Strata installation, using 8,192 context, images off, `--low-ram auto`, and `--no-start`. Strata's setup output confirms RTX 3080 Laptop GPU (16.0 GB VRAM, PCIe 3.0 x8), 31 GB RAM, Ryzen 9 5900HX (AVX2), existing engine `~/Strata/engine/strata`, existing Python packages, reused MTP draft layer, and both GGUF shards downloaded successfully.
+
+**Installed payload:**
+- `~/Strata-data/models/IQ2_XS`: two GSQ-RCO GGUF shards, **39.23 GB** and **28.80 GB** (68.03 GB decimal total).
+- `~/Strata-data/packs/iq2_xs`: **1.43 GiB** packed arena; the installer additionally produced **33.02 GiB** `experts.bin` for low-RAM mmap mode. Upstream `setup.py` writes this file explicitly when `low_ram` is enabled, despite upstream engine support for native GGUF-backed mapped mode in some configurations; no attempts at manual pack alteration were made.
+- Existing `~/Strata-data/mtp/rt` reused; no further MTP download.
+- Generated launch script: `~/Strata/run-iq2_xs.sh`.
+
+**Storage note:** The low-RAM packed expert duplicate makes the total new model footprint roughly **105 GB decimal** (~**98 GiB**), rather than just 68 GB of GGUF shards. It is **not safe to delete `experts.bin` from this generated configuration without verifying/reconfiguring the engine**, because the config expects it for `--mmap-experts`. Verify measured free space with `df -h /`, `du -sh ~/Strata-data/models/IQ2_XS ~/Strata-data/packs/iq2_xs`. The historically error-prone Samsung 960 EVO Ubuntu SSD and Windows NVMe exclusion still apply.
+
+**Inference warning from setup:** Low-RAM mode holds approximately **31% of the experts in 16 GB VRAM**; the rest are read from the `experts.bin` pack through Linux's file cache. The installer warns this can be markedly slower than in-RAM expert residency. Do not claim improvement before benchmarking.
+
+**Next step:** Start with `cd ~/Strata && ./run-iq2_xs.sh`, check successful initialization and GPU cache allocation, then run a short controlled capture followed by longer coding/analysis tests with a clean browser conversation and source-grounded scoring. Do not mistake the generic PCIe x8 “check slot” warning for an actionable GPU-seating instruction on the integrated laptop platform. No changes to RAM, GPU, Windows SSD or runtime authorized by this installation.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
