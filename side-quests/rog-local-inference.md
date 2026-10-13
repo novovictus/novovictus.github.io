@@ -905,6 +905,41 @@ This confirms completed inference, not high-quality analysis. Strata's throughpu
 
 **Next test:** Run the previously defined positive-control `configuredQuestionCount` scenario with a fresh, isolated conversation and exact `app.js` + `page.js` sources. Score source fidelity, valid reproduction steps and mitigation separately from runtime. If measuring sustained storage pressure, use `capture-strata-test.sh` adapted to the actual coding request and take system samples simultaneously.
 
+### 2026-10-13: Full UD-Q4_K_XL positive-control trace, valid defect and invalid repro
+
+**Second source-analysis control on the full Unsloth UD-Q4_K_XL**: the operator repeated the prior Training Engine `configuredQuestionCount` exercise using `practice-test/app.js` and `practice-test/page.js`. Model log:
+
+~~~text
+[strata] done: 931 tokens in 258 s (4.5 tok/s) (stop, cancel=False), expert cache 60.0% hit (+0.4% of the routed experts over PCIe)
+~~~
+
+Returned a `CONFIRMED BUG` classification with a correct basic data-flow observation, but flawed surrounding claims and remediation. The reported **4.5 tok/s is Strata's decode rate**; 931 / 258 = 3.6 tokens/sec over end-to-end latency, which includes prefilling and other work.
+
+**Correct kernel:** `app.js` `startNew()` (lines 321-325) snapshots the selected question items but not the originally requested question count. `page.js` `restartActiveInMode()` (21-25) retains those items while resetting responses/elapsed state. `app.js` `submit()` (416, 424) stores **mutable** `state.settings.questionCount`, not an attempt-creation snapshot, as completed-run `configuredQuestionCount`. Thus later customization can produce metadata that describes a different selection setting.
+
+**Source-level errors in full-model answer:**
+
+1. Called `saveCustomize()` a `page.js` function; defined in **`app.js`** at 308-313. The `page.js` extension wraps the existing save button handler (135-143).
+2. Claimed the question-limit `oninput` **mutates** `state.settings.questionCount` and triggers `restartActiveInMode()`. Actual `app.js` lines 274-283 attach `oninput=updateCustomizeSummary`, which merely updates/clamps the form and summary. Actual global update occurs on **Save** at 312. A mode restart occurs only when a different run mode was selected **and** the user confirms (page.js 136-143).
+3. Proposed a normal UI run on a four-question bank with **60 requested, four selected, then 10 requested**. The UI clamps question-limit to the eligible bank size (`openCustomize` 276, `updateCustomizeSummary` 281-283, `saveCustomize` 312; `clampQuestionCount` 486-489). That 60-to-10 sequence cannot occur through the standard four-question UI.
+4. Proposed setting `configuredQuestionCount: active.items.length` only in `restartActiveInMode()`, then reading it from submit. **Incorrect semantics:** actual selected count is not necessarily the original configured/requested count, e.g., mastered-question exclusions. A field first introduced at restart is too late; also `sanitizeActiveAttempt()` (app.js 151-161) would drop it on load.
+
+**Valid reproduction:** On a bank with at least four eligible questions, configure and start four questions, then save a customized limit of **two** during the active attempt, leaving the previous active item set unchanged. Submit after resuming; completed result records **2 configured, 4 presented**, though the original selection setting was four. For the `restartActiveInMode()` variant, also change from Exam to Practice (or reverse) and **confirm** restart; the reconstructed attempt retains four items and is still subject to global setting mismatch. Importantly, changing the count during an active attempt **without mode restart** is enough to create this inconsistency.
+
+**Correction principle:** Snapshot the originally configured count at `startNew()`; preserve it across user-confirmed mode restarts, `sanitizeActiveAttempt()` and resume/import, and read it in `submit()`. Define whether a mode restart conceptually creates a new configured run or inherits the original selection setting; don't conflate `configuredQuestionCount` and `total`.
+
+| Metric | Previous Coder IQ1_M positive control | New full UD-Q4_K_XL |
+| --- | ---: | ---: |
+| Total generated tokens | 1,567 | 931 |
+| End-to-end duration | 39 s | 258 s |
+| Reported decode | 43.0 tok/s | 4.5 tok/s |
+| GPU expert hit rate | 88.4% | 60.0% |
+| PCIe expert share | 0.1% | 0.4% |
+| Underlying metadata issue identified | Yes | Yes |
+| Valid minimal patch / reproduction | No | No |
+
+**Verdict:** **Partial success, mirroring Coder**, without a demonstrated coding-quality gain from the full higher-precision variant. The full run takes ~6.6x longer total and ~9.6x lower decode tok/s on different token quantities; first-token latency, disk pressure and exact prompts were not captured in a synchronized benchmark. Combined with the previous negative-control false positive, neither model has yet met high-confidence autonomous source-review criteria. No Training Engine source changes were made.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
