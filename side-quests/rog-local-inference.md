@@ -821,6 +821,39 @@ This demonstrates end-to-end load, prefill, reasoning/answering, and normal term
 
 **Next controlled test:** begin a *new chat* to avoid inherited context, use a fixed short prompt with explicit concise output, collect prompt token count, TTFT, decode tokens/s and `/metrics` expert tier counts plus concurrent `vmstat 1` and `iostat -dx 1 nvme0n1`. Do not alter RAM budget, context or prefetch options until that baseline is recorded. Do not touch Windows NVMe.
 
+### 2026-10-13: Captured 16-second controlled inference and expert-tier I/O
+
+**Evidence:** Operator-provided `20261013-144030.zip` captured a single non-streaming OpenAI-compatible API call from **2026-10-13 14:40:33 to 14:40:49 EDT**, with before/after Strata `/metrics`, Linux `vmstat`, `iostat -dx 1 nvme0n1`, `nvidia-smi`, `/proc/pressure`, and cumulative `/proc/{vmstat,diskstats}` counters. **HTTP 200**, `curl` exit **0**, Strata finish **stop**, and a coherent one-sentence reply to an SSD-versus-RAM latency question. This is the **second completed inference**, and the first synchronized full-system capture on this model.
+
+| Measurement | Captured | Source and caveat |
+| --- | ---: | --- |
+| Request wall time | **16.093 s** | curl, one direct request |
+| Prompt | **29 tokens; 7.448 s; 3.9 tok/s** | Strata response and metrics; `cached_tokens=0` |
+| Decode | **45 tokens; 8.577 s; 5.2 tok/s** | Includes all generated tokens; 32 speculative drafts offered, 25 accepted (78.1%) |
+| GPU expert hit rate | **51.0%** | `requests[0].hit_rate` |
+| GPU PCIe expert share | **1.0%** | `requests[0].pcie_share` |
+| RAM/file-tier routed blobs | **2,789 / 5,513** | Strata request-level expert tier counters |
+| Logical file-tier expert data | **15,144 MB (~15.14 GB)** | Strata `file_mb`, **not** physical disk reads |
+| Physical Ubuntu NVMe reads | **9.976 GB (9.291 GiB)** | `/proc/diskstats` read-sector delta across **~22 s**, systemwide |
+| Physical Ubuntu NVMe writes | **0.324 GB** | `/proc/diskstats` sector delta, same 22 s |
+| NVMe read rate during request | **618 MB/s mean, 953 MB/s peak** | 16 aligned iostat 1 s samples, excluding its initial since-boot average |
+| NVMe busy | **56.2% average** | iostat `%util`, 16 samples |
+| GPU utilization | **99.9% mean** | NVIDIA SMI, 16 active samples, 15,681 MiB GPU VRAM used |
+| GPU power/temp | **46.5 W mean, 51.8 W max, 47–51 C** | GPU has 115 W cap; no observed thermal/power limitation |
+| Swap activity | **~275 MiB swap-in, ~306 MiB swap-out** | Kernel `pswpin/pswpout` 4 KiB page deltas over ~22 s |
+| Swap occupied | **3.9 -> 4.0 GiB of 8 GiB** | `free -h`, before/after |
+| Available RAM | **14 -> 15 GiB** | Includes reclaimable cache; free pages at moments were in hundreds MiB |
+| Kernel major faults | **+55,078** | Systemwide, over ~22 s |
+| PSI I/O `some/full` total increase | **1.512 s / 0.910 s** | Kernel I/O pressure across ~22 s |
+| PSI memory `some/full` increase | **0.473 s / 0.420 s** | Kernel memory pressure across ~22 s |
+| Remaining Ubuntu disk space | **74 GiB** | `df -h /` in before/after snapshots |
+
+**Interpretation:** The 111 GB UD-Q4_K_XL model runs normally at approximately **5.2 output tokens/sec** on fixed 31 GB RAM/16 GB VRAM, with a large majority of off-GPU expert accesses served by its file tier. Approximately 10 GB of physical SSD reads during the 22 s instrumented window against ~15 GB logical file-tier expert bytes is consistent with Linux page-cache service; systemwide reads also include swap and other processes and therefore **cannot establish an exact model page-cache hit rate**. Swap-in and swap-out are both active (a notable burst at 14:40:37-38), demonstrating memory contention, but `MemAvailable` remained high enough and PSI stall counters small enough that **sustained pathological thrashing is not established**. GPU utilization was high without temperature/power saturation; high utilization by itself does not prove compute-bound inference. The capture was **non-streaming**, so curl's start-transfer equals response completion and does **not** measure first-generated-token latency.
+
+**Comparison to earlier browser session:** The earlier inherited-context `test` had **5,672 prompt tokens / 80.189 s prefill / 70 generated / 4.3 tok/s decode**. This controlled request was **29 prompt tokens / 7.448 s prefill / 45 generated / 5.2 tok/s decode**. Differences in prompt length, routing and cache warmth prevent concluding a stable speedup. Small-prompt prefill has a significant fixed/file-tier cost.
+
+**Follow-up:** Repeat same short request 2–3 times with unchanged settings to quantify warm-cache variance before tuning RAM. Then one-factor-at-a-time compare **8 GiB resident expert budget against 6 GiB** (and possibly 4 GiB). Smaller budgets may reduce swap pressure yet increase NVMe reads; the result cannot be predicted reliably from this one run. Continue monitoring the Samsung 960 EVO's previously reported SMART errors, and keep the separate Windows NVMe untouched. The detailed analysis was also saved in the conversation as `Strata_UD-Q4_K_XL_Benchmark_2026-10-13.md`; this log records its key measurements.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
