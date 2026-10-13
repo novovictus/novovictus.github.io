@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** First Strata Coder IQ1_M benchmark complete; model-quality and storage tests pending (2026-10-13)  
+**Status:** First Strata performance benchmark complete; initial full-project code-analysis request exhausted thinking limit without an answer (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -505,6 +505,38 @@ bench/results/2026-10-13-community-rtx-3080-laptop-gpu-qwen3-8-flash-next-coder-
 **Engineering assessment:** This is a **working local LLM inference baseline** with 35.5 tok/s median short-chat decoding and less than 1 second median TTFT on short prompts. The 47.4 tok/s calibration maximum was from a different workload and must not replace the formal short-chat median. Engine-reported 421 MiB free VRAM suggests limited GPU allocation margin, particularly while USB-C DisplayPort uses the dGPU, but is not an independent \`nvidia-smi\` measurement. No SSD read-rate, IOPS, CPU/GPU thermals, power draw, clock, peak RAM, swap, page fault or answer correctness data were collected. The test neither establishes nor refutes the practical value of 64 GB RAM or faster storage.
 
 **Follow-up tests:** (1) confirm web UI or API interaction and request correctness, (2) capture \`nvidia-smi\`, \`free -h\`, \`vmstat\`, and \`iostat\` during a real coding/log-analysis prompt, (3) examine GPU display-routing and VRAM headroom under load, (4) re-run repeatable tests using the healthy 970 EVO Plus, (5) compare higher model precisions only if hardware requirements permit. Do not publicize the raw ZIP as benchmark proof of reasoning ability; the source report explicitly measures speed only. Archive the ZIP somewhere reliable rather than solely on the damaged 960 EVO.
+
+### 2026-10-13: Real code-analysis attempt, reasoning exhaustion (negative result)
+
+**Purpose:** Replace synthetic speed tests with a practical analysis of the author's Training Engine application. The operator supplied seven source/runtime files to the local Strata web UI: \`app.js\`, \`bootstrap.js\`, \`index.html\`, \`page.js\`, \`questions.js\`, \`README.md\`, and \`styles.css\`. User request: **"analyze my training engine"**. The engine includes question-bank selection and schema validation, exam/practice logic, mastery/progress persistence, answer review, and AI-assisted explanation integration.
+
+**Result: failure to produce a final answer.** Strata produced a long chain of thought, reached the generation ceiling, and terminated the request without a response body:
+
+~~~text
+[strata] thinking: 39919 of max 39968 tokens, 42.1 tok/s, 966 s
+[strata] done: 39968 tokens in 966 s (42.2 tok/s) (length, cancel=False), expert cache 90.0% hit (+0.1% of the routed experts over PCIe)
+[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in strata-<model>.json for every request) leaves room to answer
+~~~
+
+**Observed metrics:**
+
+| Metric | Outcome |
+| --- | --- |
+| Prompt | "analyze my training engine" with seven uploaded project files |
+| Generated reasoning | 39,968 tokens (entire generation allowance) |
+| Final user-visible answer | **None** |
+| Termination | Output length, \`cancel=False\`; not a reported crash |
+| Runtime | 966 s (16 min 6 s), ~42.2 tok/s |
+| Adaptive expert cache | 90.0% hit |
+| Routed experts over PCIe | +0.1% per engine diagnostic |
+| Accuracy / software defects found | **Unmeasured** because no answer was produced |
+| Client input-token count / exact thinking level | Not captured |
+
+**Diagnosis:** This run reached the **generation/output limit**, not a demonstrated out-of-memory, PCIe, or 65,536-token context-window limit. A steady decode rate near calibrated speeds indicates the engine sustained generation, but **throughput without useful output is not task success**. This is a distinct inference-quality/usability failure mode and should remain visible even if subsequent mitigations work.
+
+**Mitigation for controlled retest:** Strata supports a separate hard reasoning allowance \`"reasoning_budget_tokens": 4096\`, either in an individual OpenAI/Anthropic request or as a top-level key in \`strata-coder-iq1_m.json\` (About > Model settings; restart model to apply). The engine closes reasoning and continues to the answer when the budget is reached; \`0\` removes the cap. Use a low thinking setting, a smaller total output allowance such as 8,192 tokens, and one bounded task. Example evaluation prompt: *"Review the supplied Training Engine JavaScript files. Identify the three highest-confidence functional bugs. For each, cite the file and function, describe a reproducible failure case, and propose the smallest correction. Do not suggest enhancements or refactoring."* This is **a proposed next test**, not a completed rerun. Preserve the original no-answer result as an independent data point.
+
+**Follow-up:** Measure actual reasoning vs. answer tokens, elapsed time, and source-grounded accuracy on individual bug claims. Compare with another model/precision only after controlling prompt scope and budget. References: [Strata documentation on hard thinking budgets](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md).
 
 ## References
 
