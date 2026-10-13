@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** 111.3 GB UD-Q4_K_XL fully loaded and produced first completed inference at 4.4 tok/s on 31 GB RAM, 16 GB VRAM and Ubuntu NVMe expert tier (2026-10-13)  
+**Status:** UD-Q4_K_XL experimental phase concluded: 111.3 GB model ran successfully but sustained multi-minute reasoning tasks were impractical; model and pack removed, Ubuntu storage returned to 179 GiB available (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -939,6 +939,25 @@ Returned a `CONFIRMED BUG` classification with a correct basic data-flow observa
 | Valid minimal patch / reproduction | No | No |
 
 **Verdict:** **Partial success, mirroring Coder**, without a demonstrated coding-quality gain from the full higher-precision variant. The full run takes ~6.6x longer total and ~9.6x lower decode tok/s on different token quantities; first-token latency, disk pressure and exact prompts were not captured in a synchronized benchmark. Combined with the previous negative-control false positive, neither model has yet met high-confidence autonomous source-review criteria. No Training Engine source changes were made.
+
+### 2026-10-13: UD-Q4_K_XL removed; storage restored
+
+Following evaluation of the 111.3 GB Unsloth UD-Q4_K_XL full model, the operator stopped the Strata server and removed only its GGUF model directory (`~/Strata-data/models/unsloth-UD-Q4_K_XL`) and prepared pack (`~/Strata-data/packs/unsloth-ud-q4_k_xl`). Operator-provided post-removal output:
+
+~~~text
+$ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  228G   37G  179G  18% /
+
+$ du -sh ~/Strata-data
+6.5G    /home/rog/Strata-data
+~~~
+
+The figures match the **pre-installation state after Coder retirement**: 179 GiB free, 6.5 GiB shared Strata data remaining. Roughly **105 GiB** of Ubuntu filesystem space has been reclaimed from the UD-Q4_K_XL installation. The reusable shared `~/Strata-data/mtp` resources, Strata engine/configuration, and locally saved benchmark output were deliberately retained; Windows SSD remains off limits. The original launch script may still refer to the removed model and should not be run without installing a compatible model.
+
+**Phase outcome:** Technically successful, operationally impractical. The hardware (RTX 3080 Laptop 16 GB VRAM, 31 GiB reported Linux RAM, existing Ubuntu SSD) loaded and completed inference for a roughly 111 GB model using GPU expert caching, an 8 GiB resident expert budget, and SSD-backed experts. Three short repeated prompts improved from 5.2 to ~10.7-11.7 output tokens/sec as caches warmed, but the two code-analysis controls needed **440 s / 1,935 tokens / 5.3 tok/s** and **258 s / 931 tokens / 4.5 tok/s**, respectively, and both contained unsupported assertions; neither achieved high-confidence unassisted code-review quality. Accordingly, the model's storage footprint and multi-minute answer latency did not justify keeping it installed.
+
+No replacement model, RAM upgrade, storage reconfiguration, or new runtime is authorized or implied by closing this phase. The measurement record stays available for future comparison.
 
 ## References
 
