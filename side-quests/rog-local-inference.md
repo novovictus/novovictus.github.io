@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** First Strata performance benchmark complete; initial full-project code-analysis request exhausted thinking limit without an answer (2026-10-13)  
+**Status:** Speed baseline established; two code-analysis attempts exhausted generation limits without producing an answer (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -537,6 +537,36 @@ bench/results/2026-10-13-community-rtx-3080-laptop-gpu-qwen3-8-flash-next-coder-
 **Mitigation for controlled retest:** Strata supports a separate hard reasoning allowance \`"reasoning_budget_tokens": 4096\`, either in an individual OpenAI/Anthropic request or as a top-level key in \`strata-coder-iq1_m.json\` (About > Model settings; restart model to apply). The engine closes reasoning and continues to the answer when the budget is reached; \`0\` removes the cap. Use a low thinking setting, a smaller total output allowance such as 8,192 tokens, and one bounded task. Example evaluation prompt: *"Review the supplied Training Engine JavaScript files. Identify the three highest-confidence functional bugs. For each, cite the file and function, describe a reproducible failure case, and propose the smallest correction. Do not suggest enhancements or refactoring."* This is **a proposed next test**, not a completed rerun. Preserve the original no-answer result as an independent data point.
 
 **Follow-up:** Measure actual reasoning vs. answer tokens, elapsed time, and source-grounded accuracy on individual bug claims. Compare with another model/precision only after controlling prompt scope and budget. References: [Strata documentation on hard thinking budgets](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md).
+
+### 2026-10-13: Second code-analysis attempt, 4,096-token exhaustion
+
+After the first 39,968-token / 966-second analysis attempt produced no final answer, the operator used Strata's web UI to adjust the thinking control as previously recommended. The rerun still produced no answer:
+
+~~~text
+[strata] thinking: 4090 of max 4096 tokens, 39.5 tok/s, 122 s
+[strata] done: 4096 tokens in 122 s (39.5 tok/s) (length, cancel=False), expert cache 88.6% hit (+0.1% of the routed experts over PCIe)
+[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in strata-<model>.json for every request) leaves room to answer
+~~~
+
+| Metric | First code review | Second code review |
+| --- | ---: | ---: |
+| Total generated tokens | 39,968 | **4,096** |
+| Wall time | 966 s | **122 s** |
+| Generation rate | 42.2 tok/s | **39.5 tok/s** |
+| Expert-cache hit rate | 90.0% | **88.6%** |
+| PCIe routed experts (per engine log) | +0.1% | +0.1% |
+| Final review delivered | No | **No** |
+
+**Interpretation:** The message `thinking: ... of max 4096` indicates that 4,096 tokens were available **for total generation** on this request, rather than that the hard reasoning budget forced an early reasoning close with room left for an answer. A model-side thinking setting, a per-request cap, the config's `reasoning_budget_tokens` field, and the server restart state must be distinguished before blaming quantization or model comprehension. It is **not yet confirmed** what was actually saved in the JSON file or whether a new server process loaded it.
+
+**Controlled diagnosis proposed:**
+
+1. Examine `~/Strata/strata-coder-iq1_m.json` for a **top-level** `"reasoning_budget_tokens"` field; ensure it is not confused with `max_tokens` or nested under `args`. Check whether the engine was restarted after saving web About > Model settings.
+2. Give generation room beyond the reasoning cap, e.g. `reasoning_budget_tokens=1024` or `2048`, with a separate **total output cap of 8192**, and a low thinking level. Request-side values override config.
+3. For a minimal functionality check, select **Thinking: Off** in the chat UI, start a fresh conversation, and request a concise review of one uploaded JS file; this isolates the thinking loop from actual answer ability.
+4. Keep the same RTX 3080, IQ1_M weights, context setting, and AC power so this is a software-control comparison.
+
+No controlled correction has been confirmed yet. Strata's [DETAILS.md](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md) describes both hard `reasoning_budget_tokens` and the independent generation cap.
 
 ## References
 
