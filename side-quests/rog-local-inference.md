@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Strata Coder baseline complete; next phase stresses native 32 GB RAM / 16 GB VRAM with SSD-backed expert paging in full frontier-scale Qwen3.8 models; no RAM upgrade planned (2026-10-13)  
+**Status:** Unsloth UD-Q4_K_XL (111.3 GB) successfully downloaded, hash-verified and packed for Strata at 8 GiB RAM expert budget; startup/inference not yet tested (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -787,6 +787,19 @@ Filesystem        Size  Used Avail Use% Mounted on
 Coder's ~55 GiB downloaded model and ~25 GiB pack were removed; the remaining `Strata-data` is the ~6.5 GiB shared MTP data. This frees adequate storage for a **111.3 GB decimal (~103.7 GiB)** Unsloth UD-Q4_K_XL download plus ~1.4 GB packed data, leaving roughly **74 GiB free** before incidental overhead. The separate Windows NVMe remains explicitly excluded from the experiment. RAM and GPU are unchanged.
 
 **Next phase, not yet verified as installed:** run `./setup.sh --setup --family unsloth --model UD-Q4_K_XL --context 8192 --vision no --yes --no-start` in the existing Strata checkout, then inspect its generated configuration and startup logs. Measure real disk reads, page-cache behavior, GPU cache residency, generation speed, and quality. Do not extrapolate the 64 GB reference system's speed to this 32 GB system.
+
+### 2026-10-13: UD-Q4_K_XL installed and packed
+
+The operator ran the existing Strata setup on the ROG with `--family unsloth --model UD-Q4_K_XL --context 8192 --vision no --yes --no-start`, retaining the Strata engine and shared MTP data while retiring the Coder. **Setup finished with `All set.`**, no reported failures; this is not yet a successful inference result.
+
+- **Hardware detected:** RTX 3080 Laptop GPU, 16.0 GB VRAM, NVIDIA 595.99.02, compute capability 8.6; 31 GB system RAM reported by setup; Ryzen 9 5900HX AVX2; PCIe 3.0 x8. The setup warning concerning eight rather than sixteen lanes is a property of the laptop board's PCIe wiring and not evidence of user-replaceable slot placement.
+- **Model:** Qwen3.8-Flash-Next Unsloth **UD-Q4_K_XL**. **111.3 GB decimal**, four GGUF shards; each downloaded and checked with **SHA-256** against Strata's recorded values. Stored under `/home/rog/Strata-data/models/unsloth-UD-Q4_K_XL`.
+- **RAM plan:** Setup explicitly overrode recommended 48 GB RAM threshold on existing 31 GB using an **8 GiB resident expert budget**, with remaining ~77 GB of routed expert weights read from the model's GGUF via SSD/page cache. No `experts.bin` copy is used for this variant. Initial context 8,192 tokens, images off, requests one at a time.
+- **Prepared pack:** `/home/rog/Strata-data/packs/unsloth-ud-q4_k_xl`; 1.38 GiB dense arena; 1,079 tensors indexed, 303 served natively, 460 converted (264 exact, 196 rounded, max absolute difference 0.0144). The 195 compat-BF16 tensors total 1.20 GiB; routed experts and PLE table remain in GGUF. Per-role shard indexing was used for layer 11.
+- **Components reused:** Existing `engine/strata` (llama.cpp commit `3cf0325`), installed Python dependencies, and `/home/rog/Strata-data/mtp/rt` MTP draft layer. Start script `run-unsloth-ud-q4_k_xl.sh` generated. The operator did not start it because setup used `--no-start`.
+- **Warnings:** Engine could be slow and possibly run out of RAM on this 31 GB configuration; the SSD tier is expected to service most expert misses. Startup may benefit from 1500 MiB VRAM reserve if the GPU display freezes. Setup mentioned optional `STRATA_RESIDENT_HEADROOM_GIB=6` as an adjustment observed in another community experiment, **not yet enabled or measured here**.
+
+**Next evidence needed:** `df -h /` post-install to confirm disk headroom; generated `strata-unsloth-ud-q4_k_xl.json` for exact serving arguments and 8 GiB budget; launch via `./run-unsloth-ud-q4_k_xl.sh`; capture start telemetry, a short reproducible response with stop reason, decode speed, VRAM/GPU cache and Linux resident memory/disk I/O. Since the Ubuntu Samsung 960 EVO has previously reported SMART errors, monitor storage errors and avoid destructive disk changes. The physically separate Windows NVMe remains **off limits**. No GPU/RAM upgrades.
 
 ## References
 
