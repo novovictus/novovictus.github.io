@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** UD-Q4_K_XL experimental phase concluded: 111.3 GB model ran successfully but sustained multi-minute reasoning tasks were impractical; model and pack removed, Ubuntu storage returned to 179 GiB available (2026-10-13)  
+**Status:** IQ2_XS installed and running; seven short-prompt captures showed warm 74.7 tok/s and 0.736 s API latency. UD-Q4_K_XL previously concluded and removed; novel-prompt quality/performance pending (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
