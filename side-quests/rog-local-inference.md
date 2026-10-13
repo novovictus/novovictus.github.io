@@ -339,6 +339,29 @@ The final visible line was `mtp.layers.0.mlp.experts.down_proj: q2_0 235.9 MB`. 
 **Engineering interpretation:** Strata's low-RAM preprocessing created a 23.42 GiB expert file separate from the source GGUF weights. This is not evidence that SSD page-in throughput dominates decoding, nor is the arena size a measured VRAM allocation. On the suspect 960 EVO, successful file creation does not establish data durability.
 
 
+### 2026-10-13: Start-script memory policy and calibration prompt (Step 7)
+
+Installer advanced to **Step 7: writing the start script** after the model/MTP preparation stage. The actual startup and completion of calibration are not yet reported.
+
+**Automatic decision printed by installer:**
+
+```text
+[ok] KV streaming off: it needs ~0.9 GB of RAM beside the ~32 GB IQ1_M uses,
+and this PC has 31; the KV cache stays in VRAM (fewer cached experts).
+--kv-streaming on turns it on anyway
+```
+
+This is the installer's stated **working-memory requirement**; it is not the same figure as the **23.42 GiB** on-disk `experts.bin` created in Step 6. KV streaming was therefore disabled, leaving the KV cache in VRAM and reducing available VRAM for experts. The installer provided an explicit override, `--kv-streaming on`, but it is **not selected** in the baseline.
+
+**Other installer guidance:**
+
+- The RTX 3080 also drives the Linux display. If a full model load causes a freeze or black screen (upstream issue #779), rerun setup with `--vram-reserve-mib 1500`. No such failure has yet been observed.
+- Installer cited an upstream community benchmark (issue #834) suggesting changing `"STRATA_RESIDENT_HEADROOM_GIB"` from default `4` to `6` on a 31 GB RAM system; it reportedly retained decoding speed while leaving 2 GiB more RAM available to the OS. **Not applied**; test as a separate variable later.
+- Calibration prompt: `Tune Strata for this PC now? ... (about 15-30 minutes; later: START-HERE --calibrate) [y]`.
+- Recommended accepting calibration now on ASUS AC power, with 64K context, 8-bit KV, no vision/projection, and all defaults initially preserved. **Operator selection and calibration result are still pending confirmation.**
+
+**Measurement caution:** The calibration is a machine-specific result, not yet a comparative GPU benchmark. The faulty 960 EVO, the GPU's role driving the display, RAM pressure, and power modes are confounding factors; repeat calibration on the healthy drive before final performance conclusions.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
