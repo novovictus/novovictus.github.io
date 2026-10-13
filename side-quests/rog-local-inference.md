@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Local inference performance baseline established; real code-review controls show one false-positive classification and one correctly identified metadata bug with flawed reproduction and incomplete fix (2026-10-13)  
+**Status:** Strata Coder baseline and negative/positive source-analysis controls complete; general-purpose model comparison is next (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -695,6 +695,18 @@ The request ended normally after **1,567 generated tokens** in **39 seconds**, w
 - **Proposed fix not sufficient**: storing `active.items.length` in `restartActiveInMode()` conflates the number of selected questions with the originally configured count, fails to capture it at `startNew()`, and adding a new field without also teaching `sanitizeActiveAttempt()` to preserve it would lose that state across page reload/import. A proper patch would record `configuredCount` on the attempt at creation, retain it through restart and sanitization, and use that snapshot on submission; exact metadata semantics of a restarted run should be explicitly defined.
 
 **Assessment:** **Partial success**. It detected a real mismatch but hallucinated particulars of the reproduction and provided an incomplete remediation. **Do not claim verified patch correctness or apply Strata's code unreviewed.** Combined with the negative control, this strongly suggests distinguishing sound local control-flow tracing from unreliable assumptions about wider UI state and complete fixes. No changes to the Training Engine were made.
+
+### 2026-10-13: Direction change, stop treating Strata Coder as coding assistant
+
+The operator explicitly decided **not to use the installed Coder variant for coding**, following the completed performance baseline and inaccurate code-analysis runs. The next experiment should be **general-purpose local inference**, with correctness and succinctness ahead of sustained tokens/s. No additional Coder prompt tuning or patch-generation trials are planned.
+
+**Candidate A (first):** [Qwen3.5-9B Q8_0](https://huggingface.co/SoAIHQ/Qwen3.5-9B-GGUF) using a recent CUDA-enabled **llama.cpp/llama-server** build; GGUF weights ~9.79 GB, so target full GPU residency on the RTX 3080 Laptop 16 GB. Start with a moderate context (e.g. 16K or 32K) and non-thinking mode for initial functional tests. Optional vision projection is separately downloadable. This requires a **different runtime**: Strata as currently documented is specialized to Qwen3.8-Flash-Next and its variants, not a generic GGUF model runner.
+
+**Candidate B (independent cross-model comparison):** [Gemma 3 12B Instruct Q6_K](https://huggingface.co/second-state/gemma-3-12b-it-GGUF), GGUF ~9.66 GB; also a plausible fit on 16 GB VRAM at moderate context, not yet measured on this ROG.
+
+These are **recommendations and published sizes only**, not benchmark observations or a claim either model is more accurate. No new model has been installed or tested, and the existing Strata install/benchmarks remain intact. Since the current Ubuntu SSD previously reported SMART integrity errors, avoid unnecessary large downloads to it, and use known-good storage when available.
+
+**Proposed comparative protocol:** hold machine, native Ubuntu, mains adapter, GPU settings, and prompt set fixed; record first-response latency, actual model residency/VRAM, prompt ingestion, decode tokens/s, output token count, repetition/termination, and source-grounded accuracy. Use small general-purpose tasks first, including a known-answer task and a deliberate false premise, then selected real-world technical interpretation and longer document synthesis. Aim to find a *usable* local general-purpose assistant rather than optimize a defective code-review workflow.
 
 ## References
 
