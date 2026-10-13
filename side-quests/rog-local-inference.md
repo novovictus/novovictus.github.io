@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Speed baseline established; first completed real code review was delivered but showed repeated self-corrections, false-positive bug claims and incomplete fixes (2026-10-13)  
+**Status:** Speed baseline established; real-world code review and single-defect negative-control test expose confident false positives despite normal inference completion (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -643,6 +643,31 @@ The operator provided the actual 230-line response from the previously recorded 
 **Overall:** Of three confident claims, **one source-grounded metadata defect**, **one false positive against deliberate review UX**, and **one unsubstantiated locking-policy criticism**; the suggested fixes include one direct field-assignment error and one incomplete data-lifecycle change. No bug fixes applied. The run demonstrates eventual answer generation after the thinking-budget mitigation but **fails the requested high-confidence engineering review standard**. It cannot be counted as successful source-based reasoning merely because the engine returned `stop`.
 
 **Next controlled tests:** Ask for a single verifiable execution path, e.g. `"Trace how configuredQuestionCount is recorded when a run starts, settings change while it remains active, and it is submitted. Quote the exact functions, and distinguish configured vs presented counts."` Or ask the model to **verify** one candidate bug at a time, explicitly allowing `"no bug"` as an answer. Score source accuracy, self-contradictions, patch correctness and time-to-first-useful-answer in addition to tokens/sec. Keep model/hardware configuration constant until baseline quality is characterized.
+
+### 2026-10-13: Negative-control test, exam review navigation (failed)
+
+**Goal:** Test whether Qwen3.8-Flash-Next Coder IQ1_M can correctly reject a false-positive defect report, rather than manufacture a fix. Operator started a new Strata chat, uploaded `app.js` from [Training Engine](https://github.com/novovictus/training-engine/blob/main/practice-test/app.js), and asked it to audit the claim: in exam mode, when all questions are answered and unflagged, using the final-question navigation button returns to question 1. Explicitly asked for a classification of **CONFIRMED BUG**, **EXPECTED BEHAVIOR**, or **INCONCLUSIVE** and to inspect the button label and `renderQuestion()/move()`.
+
+**Engine log:**
+
+~~~text
+[strata] answering: 1469 of max 60975 tokens, 44.2 tok/s, 34 s
+[strata] done: 1470 tokens in 34 s (44.2 tok/s) (stop, cancel=False), expert cache 84.8% hit (+0.3% of the routed experts over PCIe)
+~~~
+
+The **60,975-token generation allowance** is the per-request ceiling in this run, **not the 1,024-token thinking budget**; the operator had not configured a persistent 8,192 output limit. The run ended normally after **1,470 total tokens** in **34 seconds**, expert cache **84.8%**. No evidence of a runaway generation loop.
+
+**Model verdict:** **CONFIRMED BUG.** It correctly traced the `move(1)` branch: `index` falls back to 0 after neither an unanswered nor flagged question is found. It then asserted that users see a `Next` button with no review indication, called the fallback arbitrary, and recommended a stay-on-last or review-complete state.
+
+**Verified source behavior in the current training-engine/main file:**
+
+- `app.js` **line 380** explicitly sets the final exam-mode `next-btn` text to **`Review`**; all earlier questions use `Next`.
+- `app.js` **lines 392–399** intentionally navigate to the first unanswered question, first flagged question, or question 1, then set `$('navigator').hidden=false` and call `renderQuestion()`. Returning to question 1 and opening the review navigator is explicit, not accidental control flow.
+- Consequently the model's assertions **“The user sees Next”** and **“no ... review indicator”** are factually inconsistent with the source. A different UX design could be proposed, but the tested control path does not establish a functional defect.
+
+**Verdict:** **Negative control failed**. The model gave a confident false-positive classification on the same issue it had misclassified in its original seven-file review, even with a smaller single-file prompt, constrained task, and functioning reasoning cap. The source-level execution trace was mostly correct; the final conclusion was biased by the overlooked UI label and navigator side effect. No Training Engine change warranted on this evidence.
+
+**Follow-up:** Positive-control code-trace test against a suspected real `configuredQuestionCount` metadata bug, requiring `app.js` plus `page.js`. Continue scoring source fidelity separately from runtime performance, and record whether conclusions match concrete behavior.
 
 ## References
 
