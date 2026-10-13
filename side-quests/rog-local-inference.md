@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Strata Coder baseline and negative/positive source-analysis controls complete; general-purpose model comparison is next (2026-10-13)  
+**Status:** Strata Coder baseline complete; next candidate is full Qwen3.8-Flash-Next IQ2_XS in Strata, pending RAM feasibility (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -707,6 +707,26 @@ The operator explicitly decided **not to use the installed Coder variant for cod
 These are **recommendations and published sizes only**, not benchmark observations or a claim either model is more accurate. No new model has been installed or tested, and the existing Strata install/benchmarks remain intact. Since the current Ubuntu SSD previously reported SMART integrity errors, avoid unnecessary large downloads to it, and use known-good storage when available.
 
 **Proposed comparative protocol:** hold machine, native Ubuntu, mains adapter, GPU settings, and prompt set fixed; record first-response latency, actual model residency/VRAM, prompt ingestion, decode tokens/s, output token count, repetition/termination, and source-grounded accuracy. Use small general-purpose tasks first, including a known-answer task and a deliberate false premise, then selected real-world technical interpretation and longer document synthesis. Aim to find a *usable* local general-purpose assistant rather than optimize a defective code-review workflow.
+
+### 2026-10-13: Clarified pivot, preserve Strata runtime (supersedes previous runtime proposal)
+
+The operator corrected the earlier recommendation: **retain Strata** because its inference engine works well on the ROG system relative to earlier Ollama experiences. The intended pivot is **from Qwen3.8-Flash-Next Coder IQ1_M to a full/general-purpose Qwen3.8-Flash-Next variant**, not to a different inference runtime. The earlier idea to install Qwen3.5-9B or Gemma 3 under llama.cpp is **not the active plan**. No alternative model is installed yet.
+
+Strata's own [model selection documentation](https://github.com/Niko1221/Strata/blob/main/docs/MODELS.md) identifies the limitations:
+
+| Family/variant | Expert weights | Normal RAM recommendation | Current 32-GB RAM + 16-GB VRAM status |
+| --- | ---: | --- | --- |
+| Current Coder IQ1_M | ~23 GB | 32 GB | Running and benchmarked |
+| Full Q2_0 | ~34 GB | 48 GB | Would fall back to memory-mapped expert storage and heavy SSD access |
+| Full IQ2_XS | ~35.5 GB | 48 GB | Same issue; Strata's preferred full general-purpose size |
+| Full IQ3_XXS | ~43 GB | 64 GB | Not a practical current-system-memory choice |
+| Full IQ3_S | ~50 GB | 64 GB | Not a practical current-system-memory choice |
+
+The source specifies low-RAM **resident** mode on a 32-GB system with 12–16-GB GPU for the **Coder**, but for **Q2_0/IQ2_XS** it uses 32-GB RAM **with a 24-GB GPU**. On the ROG RTX 3080 Laptop **16 GB**, forcing the full family with current 32 GB would use file-mapped experts and likely reduce throughput sharply. The Ubuntu Samsung 960 EVO SSD previously showed SMART media integrity errors, making a paging-heavy experiment undesirable.
+
+**Recommended next option:** evaluate a **2×32-GB DDR4 SODIMM (64 GB) memory upgrade**, verify platform compatibility and available storage, then add **full Qwen3.8-Flash-Next IQ2_XS** through existing Strata's `./setup.sh --setup`. Keep the Coder install untouched as a baseline. The 48-GB minimum fits but 64 GB gives better memory headroom and dual-channel symmetry. Neither RAM upgrade nor install has been approved or performed.
+
+The earlier full-model speed/quality figures come from upstream test machines and must **not** be reported as measured results for the ROG.
 
 ## References
 
