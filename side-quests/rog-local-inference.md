@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Unsloth UD-Q4_K_XL (111.3 GB) successfully downloaded, hash-verified and packed for Strata at 8 GiB RAM expert budget; startup/inference not yet tested (2026-10-13)  
+**Status:** UD-Q4_K_XL Strata API starts on 31 GB RAM and RTX 3080 16 GB, GPU caches 2,799 experts; first completion still pending, with significant NVMe reads and swap pressure (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -800,6 +800,16 @@ The operator ran the existing Strata setup on the ROG with `--family unsloth --m
 - **Warnings:** Engine could be slow and possibly run out of RAM on this 31 GB configuration; the SSD tier is expected to service most expert misses. Startup may benefit from 1500 MiB VRAM reserve if the GPU display freezes. Setup mentioned optional `STRATA_RESIDENT_HEADROOM_GIB=6` as an adjustment observed in another community experiment, **not yet enabled or measured here**.
 
 **Next evidence needed:** `df -h /` post-install to confirm disk headroom; generated `strata-unsloth-ud-q4_k_xl.json` for exact serving arguments and 8 GiB budget; launch via `./run-unsloth-ud-q4_k_xl.sh`; capture start telemetry, a short reproducible response with stop reason, decode speed, VRAM/GPU cache and Linux resident memory/disk I/O. Since the Ubuntu Samsung 960 EVO has previously reported SMART errors, monitor storage errors and avoid destructive disk changes. The physically separate Windows NVMe remains **off limits**. No GPU/RAM upgrades.
+
+### 2026-10-13: UD-Q4_K_XL startup and Linux memory pressure
+
+The operator started UD-Q4_K_XL with its generated script. Strata printed `filling the GPU's expert cache (2799 experts, 8.16 GiB of VRAM)` followed by `ready: http://127.0.0.1:8080/v1` at context **8192**. This proves engine initialization and API availability, **not yet a successful completed inference request**. Chromium emitted zygote `Broken pipe (32)` errors while trying to open an existing browser session; these are browser errors, not proof of an inference failure.
+
+`iostat -dx 1 nvme0n1` showed roughly **555 MB/s**, **1078 MB/s**, then **825 MB/s** physical reads in three sampled seconds, with NVMe utilization of 33%, 74%, and 66% respectively. Storage traffic was sustained during initial start, before a user-visible response. It is not yet an inference-generation bandwidth measurement.
+
+`vmstat 1` reported swap occupied rising from **1,198,344 KiB** to **4,430,676 KiB** during 15 observations (about **1.14 to 4.23 GiB**), large continuous **swap-out** (`so`, tens of MiB/sec, peaking at 85,248 KiB/s), mostly low swap-in (`si`), free RAM in the low hundreds of MiB, Linux file cache around **23.5 to 26.5 GiB**, and I/O wait up to **28%**. These observations establish **memory pressure and eviction of anonymous pages for file-backed caching**, but do not yet prove two-way *swap thrashing*; later requests and `si` will tell. The SSD is the Ubuntu Samsung 960 EVO with previously documented media errors, so long aggressive I/O stress may have data-integrity risks.
+
+**Next reproducible check:** one brief single-turn response with fixed reasoning settings and a modest max output, while recording Strata tokens/sec/stop reason, `vmstat 1` `si/so`, and the `/metrics` GPU/RAM/file expert tiers. Check `swapon --show` and `free -h`; if swap keeps expanding toward the 8 GiB limit or the system becomes unresponsive, stop the run and consider a follow-up at a smaller explicit RAM expert budget. Changes should be isolated, not made simultaneously with context changes. The Windows NVMe remains outside experiment scope.
 
 ## References
 
