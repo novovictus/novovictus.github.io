@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** UD-Q4_K_XL Strata API starts on 31 GB RAM and RTX 3080 16 GB, GPU caches 2,799 experts; first completion still pending, with significant NVMe reads and swap pressure (2026-10-13)  
+**Status:** 111.3 GB UD-Q4_K_XL fully loaded and produced first completed inference at 4.4 tok/s on 31 GB RAM, 16 GB VRAM and Ubuntu NVMe expert tier (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -810,6 +810,16 @@ The operator started UD-Q4_K_XL with its generated script. Strata printed `filli
 `vmstat 1` reported swap occupied rising from **1,198,344 KiB** to **4,430,676 KiB** during 15 observations (about **1.14 to 4.23 GiB**), large continuous **swap-out** (`so`, tens of MiB/sec, peaking at 85,248 KiB/s), mostly low swap-in (`si`), free RAM in the low hundreds of MiB, Linux file cache around **23.5 to 26.5 GiB**, and I/O wait up to **28%**. These observations establish **memory pressure and eviction of anonymous pages for file-backed caching**, but do not yet prove two-way *swap thrashing*; later requests and `si` will tell. The SSD is the Ubuntu Samsung 960 EVO with previously documented media errors, so long aggressive I/O stress may have data-integrity risks.
 
 **Next reproducible check:** one brief single-turn response with fixed reasoning settings and a modest max output, while recording Strata tokens/sec/stop reason, `vmstat 1` `si/so`, and the `/metrics` GPU/RAM/file expert tiers. Check `swapon --show` and `free -h`; if swap keeps expanding toward the 8 GiB limit or the system becomes unresponsive, stop the run and consider a follow-up at a smaller explicit RAM expert budget. Changes should be isolated, not made simultaneously with context changes. The Windows NVMe remains outside experiment scope.
+
+### 2026-10-13: First completed 111 GB inference (4.4 tok/s)
+
+**First successful completed response** for Unsloth UD-Q4_K_XL (111.3 GB) with existing Strata on the unmodified ROG hardware. User entered `test`; model response: `Still here and working fine. 👍 Whenever you're ready, send over the next task or question.` Strata reported **5,672 prompt tokens**, taking **~80 s** to read (effective ~71 prompt tokens/s). This exceeds the one-word user input; conversation state, system instructions or other inherited prompt context have not yet been isolated.
+
+Generation: **70 tokens in 96 s elapsed**, **4.4 tokens/s decode** during the final ~16 s; thinking began around 81 s, answering around 93 s; completed with `stop, cancel=False`. The first printed progress was at 10 s, final at 96 s. Cache: **60.2% expert hits in VRAM**, plus **1.1% of routed experts computed over PCIe**. The rest are served through the other expert tiers, but the printed cache metric does **not** quantify physical SSD reads. The setup allocated 2,799 GPU cache experts in 8.16 GiB VRAM and an **8 GiB RAM expert budget**.
+
+This demonstrates end-to-end load, prefill, reasoning/answering, and normal termination of a model ~3.5 times the installed RAM. Relative to upstream **7-8.5 tok/s** on a 64 GB host with a 40 GiB RAM expert budget, this first **4.4 tok/s** result is slower but not an apples-to-apples benchmark (different platform, contexts, and caching). The earlier vmstat samples showed swap usage increasing significantly, so watch memory pressure before long runs.
+
+**Next controlled test:** begin a *new chat* to avoid inherited context, use a fixed short prompt with explicit concise output, collect prompt token count, TTFT, decode tokens/s and `/metrics` expert tier counts plus concurrent `vmstat 1` and `iostat -dx 1 nvme0n1`. Do not alter RAM budget, context or prefetch options until that baseline is recorded. Do not touch Windows NVMe.
 
 ## References
 
