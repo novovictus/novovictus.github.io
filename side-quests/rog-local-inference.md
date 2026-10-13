@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Speed baseline established; real-world code review and single-defect negative-control test expose confident false positives despite normal inference completion (2026-10-13)  
+**Status:** Local inference performance baseline established; real code-review controls show one false-positive classification and one correctly identified metadata bug with flawed reproduction and incomplete fix (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -668,6 +668,33 @@ The **60,975-token generation allowance** is the per-request ceiling in this run
 **Verdict:** **Negative control failed**. The model gave a confident false-positive classification on the same issue it had misclassified in its original seven-file review, even with a smaller single-file prompt, constrained task, and functioning reasoning cap. The source-level execution trace was mostly correct; the final conclusion was biased by the overlooked UI label and navigator side effect. No Training Engine change warranted on this evidence.
 
 **Follow-up:** Positive-control code-trace test against a suspected real `configuredQuestionCount` metadata bug, requiring `app.js` plus `page.js`. Continue scoring source fidelity separately from runtime performance, and record whether conclusions match concrete behavior.
+
+### 2026-10-13: Positive-control test, mutable configured question count (partial success)
+
+**Goal:** Test whether the same Strata model could identify a plausible genuine state-integrity defect. A new conversation used both [app.js](https://github.com/novovictus/training-engine/blob/main/practice-test/app.js) and [page.js](https://github.com/novovictus/training-engine/blob/main/practice-test/page.js). Asked for a trace of `startNew()`, `saveCustomize()`, `restartActiveInMode()`, and `submit()`, distinguishing requested, selected, and completed-run counts; instructed to classify and propose a minimal patch only if warranted.
+
+**Observed telemetry:**
+
+~~~text
+[strata] answering: 1558 of max 60395 tokens, 43.1 tok/s, 38 s
+[strata] done: 1567 tokens in 39 s (43.0 tok/s) (stop, cancel=False), expert cache 88.4% hit (+0.1% of the routed experts over PCIe)
+~~~
+
+The request ended normally after **1,567 generated tokens** in **39 seconds**, with expert cache **88.4%**; the 60,395-token maximum is the available generation ceiling rather than a reached limit.
+
+**Model conclusion:** `CONFIRMED BUG`, with a correct core observation: `submit()` reads `state.settings.questionCount` while `restartActiveInMode()` retains the old `active.items`, so after customization the completed result can record a count different from the setting that originally selected those items.
+
+**Independent source verification:**
+
+- `app.js` **lines 321–325**: `startNew()` reads `state.settings.questionCount`, selects that many (or fewer eligible) questions and constructs `active` **without** a `configuredQuestionCount` snapshot.
+- `app.js` **lines 274–283, 486–489**: `openCustomize()`, `updateCustomizeSummary()`, and `clampQuestionCount()` restrict the user-specified limit to the number of eligible questions/bank size; with only four bank questions, the normal UI **cannot configure 60** as Strata's reproduction alleged.
+- `app.js` **lines 308–312**: `saveCustomize()` updates `state.settings` upon **Save**. The `question-limit` `oninput` handler updates the preview/limit; Strata incorrectly claimed it mutates `state.settings` directly.
+- `page.js` **lines 21–25, 135–143**: switching modes, saving, and confirming a restart reconstructs `active` with the **same question IDs and option order**, but resets responses and elapsed time. Strata's phrase “carried-over responses” was inaccurate.
+- `app.js` **lines 416, 424**: `submit()` reports the **current** global `state.settings.questionCount`, not the original setting under which `active.items` was selected.
+- **Valid four-question reproduction**: start with 4 configured and 4 selected; open Customize, reduce to 2, switch mode and confirm restart; new attempt keeps 4 items; submit records configured count 2 vs total presented 4. The original-model “4 questions, request 60, change to 10” scenario is invalid under the app's clamping.
+- **Proposed fix not sufficient**: storing `active.items.length` in `restartActiveInMode()` conflates the number of selected questions with the originally configured count, fails to capture it at `startNew()`, and adding a new field without also teaching `sanitizeActiveAttempt()` to preserve it would lose that state across page reload/import. A proper patch would record `configuredCount` on the attempt at creation, retain it through restart and sanitization, and use that snapshot on submission; exact metadata semantics of a restarted run should be explicitly defined.
+
+**Assessment:** **Partial success**. It detected a real mismatch but hallucinated particulars of the reproduction and provided an incomplete remediation. **Do not claim verified patch correctness or apply Strata's code unreviewed.** Combined with the negative control, this strongly suggests distinguishing sound local control-flow tracing from unreliable assumptions about wider UI state and complete fixes. No changes to the Training Engine were made.
 
 ## References
 
