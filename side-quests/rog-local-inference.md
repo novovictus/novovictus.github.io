@@ -568,6 +568,31 @@ After the first 39,968-token / 966-second analysis attempt produced no final ans
 
 No controlled correction has been confirmed yet. Strata's [DETAILS.md](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md) describes both hard `reasoning_budget_tokens` and the independent generation cap.
 
+### 2026-10-13: JSON syntax error after reasoning configuration edit
+
+The operator tried adding a persistent reasoning budget/effort to `~/Strata/strata-coder-iq1_m.json`. Launching `./run-coder-iq1_m.sh` failed **before engine or model initialization**:
+
+~~~text
+File "/home/rog/Strata/serve/server.py", line 6348, in main
+  cfg = json.loads(Path(a.config).read_text(encoding="utf-8-sig")) if a.config else {}
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 39 column 2 (char 959)
+~~~
+
+The operator **removed the added setting and the server launched again**. The edited version of the JSON file was not supplied, so the exact malformed token is unknown. This is evidence of **invalid JSON formatting**, **not** evidence that the `reasoning_budget_tokens` key is unsupported or causes an engine failure. Upstream Strata source at the tested commit explicitly reads that top-level key.
+
+Valid ending for the observed `strata-coder-iq1_m.json` file:
+
+~~~json
+  "port": 8080,
+  "gpu": 0,
+  "gpus_asked": true,
+  "reasoning_budget_tokens": 1024,
+  "reasoning_effort": "low"
+}
+~~~
+
+**Preventative check**: after any manual edit, run `python3 -m json.tool ~/Strata/strata-coder-iq1_m.json >/dev/null && echo "JSON valid"` before restarting. Preserve existing settings and bracket/commas. The separate default `max_tokens` setting is supported in Strata's `strata-coder-iq1_m.shared-settings.json`; it is **not a supported top-level model-JSON output default**. No subsequent successful code-review inference was reported.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
