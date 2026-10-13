@@ -764,6 +764,16 @@ The ~**8 GiB default RAM expert budget** derives from Strata's rule *total RAM m
 
 **No installation or memory/disk hardware change was performed by the assistant.** The user has not yet chosen a model to install or provided a free-space check.
 
+### 2026-10-13: Storage inventory before 111 GB stress test
+
+Operator-provided disk and memory inventory: `nvme0n1` is a Samsung 960 EVO 250 GB with root on `nvme0n1p2`; `/home/rog/Strata-data` shares this filesystem. The root shows 228 GiB total, 117 GiB used and **100 GiB available**. The next target Unsloth UD-Q4_K_XL GGUF needs **111.3 GB (~103.7 GiB)** before its ~1.4 GB packed data, so it does **not fit** in the currently available Strata-data volume. Unsloth UD-IQ4_XS is **93.7 GB (~87.3 GiB)** and might fit nominally, but leaves dangerously little headroom on this SSD with previously observed SMART media errors.
+
+There is also a Samsung **953.9 GiB** NVMe at `nvme1n1`, including an unmounted **932.9 GiB** `nvme1n1p3`; this looks like a Windows/OEM partition layout, but the available output does not show its filesystem, encryption, health or **free space inside** that partition. No storage operation is authorized or performed pending read-only confirmation. The `RESTORE` partition is mounted separately at `/media/rog/RESTORE`.
+
+`free -h`: **30 GiB** usable RAM, **25 GiB** currently available; **8 GiB** swap, **986 MiB** currently occupied. Swap allocation is distinct from Strata's GGUF file-backed expert cache and should be measured independently during the stress experiment.
+
+**Next read-only checks:** `lsblk -f`, `sudo blkid /dev/nvme1n1p3`, and disk SMART diagnostics to identify whether a healthy, adequately spacious model volume exists. Avoid writing to the possibly Windows-controlled partition until its ownership, encryption and available capacity are established. Keep installed Strata Coder baseline.
+
 ## References
 
 - [ASUS ROG Strix SCAR 15 (2021) specifications](https://rog.asus.com/laptops/rog-strix/2021-rog-strix-scar-15-series/spec/)
