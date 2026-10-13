@@ -1,6 +1,6 @@
 # ROG Local Inference
 
-**Status:** Strata Coder IQ1_M setup and calibration complete; formal benchmark pending (2026-10-13)  
+**Status:** First Strata Coder IQ1_M benchmark complete; model-quality and storage tests pending (2026-10-13)  
 **Started:** 2026-10-12  
 **Platform:** ASUS ROG Strix G533QS  
 **Scope:** Local LLM inference, Linux/CUDA, quantization, system-memory and NVMe offloading
@@ -438,6 +438,73 @@ The setup documented an estimated 10-25% per-request speed cost from parallel ba
 **Current stopping point:** Installer asks whether to run a roughly **10-minute quick benchmark** and write a shareable report (\`./bench.sh\` later); default answer \`[n]\`. Recommended answering **yes**, but **benchmark initiation/completion/report not yet confirmed**.
 
 **Follow-up:** Capture the generated benchmark output and report path; test correctness and latency through the HTTP API; record peak RAM, swap, total VRAM, CPU/GPU temperatures, clock/power, PCIe link under load, and monitor routing. Keep 960 results explicitly provisional and repeat comparisons on the healthy Samsung 970 EVO Plus. Do not change resident headroom, KV streaming, context, or display configuration before preserving this baseline.
+
+### 2026-10-13: Formal Strata benchmark, successful startup, and browser issue
+
+**Milestone:** Operator selected \`y\` at the quick-benchmark prompt. Strata ran a warmup and three repetitions of short-chat, 4K, 16K, and six-turn agent-session tests. The suite completed successfully and generated a shareable benchmark report. A ZIP with three files was provided for this log:
+
+~~~text
+bench/results/2026-10-13-community-rtx-3080-laptop-gpu-qwen3-8-flash-next-coder-iq1-m/
+  README.md
+  results.json
+  engine-log-excerpt.txt
+~~~
+
+**Measurement method:** \`tools/strata_bench.py\`, suite schema 1, 3 runs per test; warmup discarded; first token measured by the local HTTP client; throughput from engine telemetry. Fresh prompts use unique identifiers to avoid cache reuse. Six-turn agent tests accumulate synthetic file text and four tool definitions. Model **correctness, actual code comprehension, and answer quality were not assessed**. Total measured suite elapsed time: **183.805 s (~3.1 minutes)**; \`results.json\` lists **no failures**. Loading time excluded.
+
+**Environment frozen from ZIP, 2026-10-13:**
+
+| Field | Observed |
+| --- | --- |
+| Host | G533QS; Ryzen 9 5900HX (8 cores / 16 threads); 30.8 GiB visible RAM |
+| OS | Ubuntu 24.04.5 LTS; kernel \`7.0.0-38-generic\`; Python 3.12.3 |
+| GPU | NVIDIA RTX 3080 Laptop, 16 GiB, driver 595.99.02; reported CUDA compatibility 13.2 |
+| Strata | Project/engine v0.1.43.1; project commit **\`a0116b27\`** |
+| Model | \`qwen3.8-flash-next-coder-iq1_m\`, IQ1_M, context 65,536, concurrency 1 |
+| Request sampling | Thinking off; temperature 0 |
+| Main runtime options | \`--expert-cache auto --prefill auto --spec 4 --mtp rt --max-context 65536 --kv int8 --resident-experts --spec-min-p 0.5\` |
+| Expert caching | 4,452 GPU expert slots using 8,672 MiB (8.47 GiB) |
+| Engine status values | 7 CPU workers; \`pcie_frac=0.14\`; \`vram_free_mib=421\` |
+| Power/display | ASUS barrel adapter connected; external display via USB-C DisplayPort (not captured independently in report machine metadata) |
+| SSD | Faulty Samsung 960 EVO 250 GB; storage throughput/latency **not measured** |
+
+**Benchmarks, medians (full observed range):**
+
+| Test | Prompt / output tokens | Samples | Prompt processing (tok/s) | Decode (tok/s) | First token (s) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Short chat | 43-51 / 100 | 9 | Not recorded | **35.50** (34.40-44.80) | **0.71** (0.63-0.82) |
+| Fresh 4K synthetic prompt | 4,019 / 24 cap | 3 | **892.70** (886.30-898.10) | Not recorded | **4.53** (4.50-4.56) |
+| Fresh 16K synthetic prompt | 16,058 / 24 cap | 3 | **1,162.00** (1,161.60-1,162.10) | Not recorded | **13.85** (13.85-13.86) |
+| Agent follow-up turns | Final prompt ~14.45K / up to 64 | 15 follow-up turns in 3 sessions | See cache details | **42.80** (35.30-52.80) | **4.14** (3.79-4.41) |
+
+**All nine short-chat requests:**
+
+| Run | q1 decode / TTFT | q2 decode / TTFT | q3 decode / TTFT |
+| --- | --- | --- | --- |
+| 1 | 44.8 tok/s / 0.771 s | 34.4 / 0.656 s | 34.8 / 0.692 s |
+| 2 | 41.8 / 0.761 s | 35.5 / 0.632 s | 34.8 / 0.710 s |
+| 3 | 42.7 / 0.823 s | 37.5 / 0.693 s | 35.3 / 0.708 s |
+
+**Fresh-prompt repetitions:** 4K prompt rates 892.7, 886.3, 898.1 tok/s and TTFT 4.532, 4.562, 4.502 s; 16K rates 1161.6, 1162.0, 1162.1 tok/s and TTFT 13.859, 13.854, 13.851 s. The greater throughput at 16K comes with greater end-to-end latency; do not confuse throughput with responsiveness.
+
+**Agent-session caching:** 68.74% median reused prompt tokens over follow-up turns (range 68.57%-68.83%); earlier-turn tokens reread per session median 5 (range 4-73), with ~13,634 new file tokens read once. First uncached turn TTFT 2.54 s (2.46-2.57). The third report describes six turns per session and four tool definitions. For run 1, token accounting and decoding were:
+
+| Turn | Prompt | Cached | Read | TTFT (s) | Decode (tok/s) |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 609 | 0 | 609 | 2.462 | 36.3 |
+| 1 | 3,715 | 632 | 3,083 | 4.330 | 38.2 |
+| 2 | 5,248 | 3,778 | 1,470 | 3.829 | 39.4 |
+| 3 | 8,692 | 5,312 | 3,380 | 4.407 | 39.7 |
+| 4 | 11,604 | 8,744 | 2,860 | 4.207 | 45.8 |
+| 5 | 14,497 | 11,651 | 2,846 | 4.170 | 50.0 |
+
+**Post-benchmark model startup:** Installer restarted the model and printed \`ready: http://127.0.0.1:8080/v1\` (OpenAI \`/v1/chat/completions\`, Anthropic \`/v1/messages\`) and offered \`http://127.0.0.1:8080/\` as browser UI. Engine startup again printed 4,452 experts / 8.47 GiB GPU cache and "still starting (32 s)" before ready.
+
+**Observed issue:** Immediately after "Opening in existing browser session", Chromium emitted two \`zygote ... Broken pipe (32)\` messages. These are **browser process/IPC errors**, not demonstrated failure of the inference server, whose ready state was printed. Whether the browser UI actually opened was not reported. Check manually at \`http://127.0.0.1:8080/\` before debugging engine startup.
+
+**Engineering assessment:** This is a **working local LLM inference baseline** with 35.5 tok/s median short-chat decoding and less than 1 second median TTFT on short prompts. The 47.4 tok/s calibration maximum was from a different workload and must not replace the formal short-chat median. Engine-reported 421 MiB free VRAM suggests limited GPU allocation margin, particularly while USB-C DisplayPort uses the dGPU, but is not an independent \`nvidia-smi\` measurement. No SSD read-rate, IOPS, CPU/GPU thermals, power draw, clock, peak RAM, swap, page fault or answer correctness data were collected. The test neither establishes nor refutes the practical value of 64 GB RAM or faster storage.
+
+**Follow-up tests:** (1) confirm web UI or API interaction and request correctness, (2) capture \`nvidia-smi\`, \`free -h\`, \`vmstat\`, and \`iostat\` during a real coding/log-analysis prompt, (3) examine GPU display-routing and VRAM headroom under load, (4) re-run repeatable tests using the healthy 970 EVO Plus, (5) compare higher model precisions only if hardware requirements permit. Do not publicize the raw ZIP as benchmark proof of reasoning ability; the source report explicitly measures speed only. Archive the ZIP somewhere reliable rather than solely on the damaged 960 EVO.
 
 ## References
 
